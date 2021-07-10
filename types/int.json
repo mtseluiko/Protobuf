@@ -1,0 +1,28 @@
+{
+	"name": "int",
+	"erdAbbreviation": "<int>",
+	"dtdAbbreviation": "{int}",
+	"parentType": "numeric",
+	"sample": 15,
+	"useSample": true,
+	"defaultValues": {
+		"subtype": "int32",
+		"unit": "",
+		"minimum": "",
+		"exclusiveMinimum": false,
+		"maximum": "",
+		"exclusiveMaximum": false,
+		"multipleOf": "",
+		"divisibleBy": "",
+		"default": "",
+		"primaryKey": false,
+		"relationshipType": "",
+		"parentRelationship": "",
+		"childRelationships": [],
+		"foreignCollection": "",
+		"foreignField": [],
+		"enum": [],
+		"sample": ""
+	},
+	"descriptor": []
+}

@@ -1,0 +1,29 @@
+{
+	"name": "fixed",
+	"erdAbbreviation": "<fxd>",
+	"dtdAbbreviation": "{fxd}",
+	"parentType": "numeric",
+	"sample": 15,
+	"useSample": true,
+	"defaultValues": {
+		"subtype": "fixed32",
+		"unit": "",
+		"minimum": "",
+		"exclusiveMinimum": false,
+		"maximum": "",
+		"exclusiveMaximum": false,
+		"multipleOf": "",
+		"divisibleBy": "",
+		"default": "",
+		"primaryKey": false,
+		"relationshipType": "",
+		"parentRelationship": "",
+		"childRelationships": [],
+		"foreignCollection": "",
+		"foreignField": [],
+		"enum": [],
+		"bitWidth": "32",
+		"sample": ""
+	},
+	"descriptor": []
+}

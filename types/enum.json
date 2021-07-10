@@ -1,0 +1,26 @@
+{
+	"name": "enum",
+	"erdAbbreviation": "<enum>",
+	"dtdAbbreviation": "{enum}",
+	"parentType": "string",
+	"useSample": true,
+	"defaultValues": {
+		"required": false,
+		"minLength": "",
+		"maxLength": "",
+		"pattern": "",
+		"default": "",
+		"primaryKey": false,
+		"relationshipType": "",
+		"parentRelationship": "",
+		"childRelationships": [],
+		"foreignCollection": "",
+		"foreignField": [],
+		"enum": [],
+		"sample": "",
+		"symbols": [],
+		"namespace": "",
+		"typeName": "",
+		"metaProps": []
+	}
+}

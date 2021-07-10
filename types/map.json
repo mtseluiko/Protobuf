@@ -1,0 +1,55 @@
+{
+	"name": "map",
+	"erdAbbreviation": "<map>",
+	"dtdAbbreviation": "{...}",
+	"parentType": "document",
+	"useSample": true,
+	"defaultValues": {
+		"subtype": "map<string>",
+		"dependencies": [],
+		"primaryKey": false,
+		"properties": [],
+		"minProperties": "",
+		"maxProperties": "",
+		"additionalProperties": false,
+		"metaProps": []
+	},
+	"subtypes": {
+		"map<string>": {
+			"childValueType": "string"
+		},
+		"map<int32>": {
+			"childValueType": "number"
+		},
+		"map<int64>": {
+			"childValueType": "number"
+		},
+		"map<sint32>": {
+			"childValueType": "number"
+		},
+		"map<sint64>": {
+			"childValueType": "number"
+		},
+		"map<uin32>": {
+			"childValueType": "number"
+		},
+		"map<uint64>": {
+			"childValueType": "number"
+		},
+		"map<fixed32>": {
+			"childValueType": "number"
+		},
+		"map<fixed64>": {
+			"childValueType": "number"
+		},
+		"map<sfixed32>": {
+			"childValueType": "number"
+		},
+		"map<sfixed64>": {
+			"childValueType": "number"
+		},
+		"map<bool>": {
+			"childValueType": "bool"
+		}
+	}
+}

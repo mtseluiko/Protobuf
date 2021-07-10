@@ -1,0 +1,24 @@
+{
+	"name": "bytes",
+	"erdAbbreviation": "<bytes>",
+	"dtdAbbreviation": "{bytes}",
+	"useSample": true,
+	"parentType": "string",
+	"jsonType": {
+		"order": 1
+	},
+	"defaultValues": {
+		"minLength": "",
+		"maxLength": "",
+		"pattern": "",
+		"default": "",
+		"primaryKey": false,
+		"relationshipType": "",
+		"parentRelationship": "",
+		"childRelationships": [],
+		"foreignCollection": "",
+		"foreignField": [],
+		"enum": [],
+		"sample": ""
+	}
+}
