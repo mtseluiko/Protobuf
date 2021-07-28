@@ -165,7 +165,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -233,7 +233,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -302,7 +302,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -392,7 +392,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -480,7 +480,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -555,7 +555,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -630,7 +630,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -694,7 +694,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -761,7 +761,7 @@ making sure that you maintain a proper JSON format.
 			"additionalProperties",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -844,7 +844,7 @@ making sure that you maintain a proper JSON format.
 			"sample",
 			{
 				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -896,74 +896,22 @@ making sure that you maintain a proper JSON format.
 			"minProperties",
 			"maxProperties",
 			{
-				"propertyName": "Meta properties",
+				"propertyName": "Options",
+				"propertyKeyword": "fieldOptions",
 				"propertyType": "group",
-				"propertyKeyword": "metaProps",
+				"propertyTooltip": "",
 				"structure": [
 					{
 						"propertyName": "Key",
-						"propertyKeyword": "metaKey",
-						"propertyType": "select",
-						"options": [
-							"java-element",
-							"java-element-class",
-							"java-class",
-							"java-key-class"
-						]
+						"propertyKeyword": "optionKey",
+						"propertyType": "text"
 					},
 					{
 						"propertyName": "Value",
-						"propertyKeyword": "metaValue",
-						"propertyTooltip": "",
-						"propertyType": "text",
-						"dependency": { 
-							"key": "metaKey",
-							"value": ""
-						}
-					},
-					{
-						"propertyName": "Value",
-						"propertyKeyword": "metaValueElement",
-						"propertyNameFull": "Meta value for element",
-						"propertyTooltip": "",
-						"propertyType": "text",
-						"dependency": { 
-							"key": "metaKey",
-							"value": "java-element"
-						}
-					},
-					{
-						"propertyName": "Value",
-						"propertyKeyword": "metaValueElementClass",
-						"propertyNameFull": "Meta value for element class",
-						"propertyTooltip": "",
-						"propertyType": "text",
-						"dependency": { 
-							"key": "metaKey",
-							"value": "java-element-class"
-						}
-					},
-					{
-						"propertyName": "Value",
-						"propertyKeyword": "metaValueClass",
-						"propertyNameFull": "Meta value for class",
-						"propertyTooltip": "",
-						"propertyType": "text",
-						"dependency": { 
-							"key": "metaKey",
-							"value": "java-class"
-						}
-					},
-					{
-						"propertyName": "Value",
-						"propertyKeyword": "metaValueKeyClass",
-						"propertyNameFull": "Meta value for key class",
-						"propertyTooltip": "",
-						"propertyType": "text",
-						"dependency": { 
-							"key": "metaKey",
-							"value": "java-key-class"
-						}
+						"propertyKeyword": "optionValue",
+						"propertyType": "details",
+						"template": "textarea",
+						"markdown": false
 					}
 				]
 			},
