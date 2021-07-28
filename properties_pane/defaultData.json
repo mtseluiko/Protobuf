@@ -5,16 +5,16 @@
 		"dbVendor": "protobuf"
 	},
 	"container": {
-		"name": "new_file",
+		"name": "New file",
 		"indexes": []
 	},
 	"collection": {
-		"collectionName": "NewMessage",
+		"collectionName": "New message",
 		"collectionUsers": [],
 		"collation": {}
 	},
 	"field": {
-		"name": "new_field"
+		"name": "New field"
 	},
 	"patternField": {
 		"repetition": "required",
