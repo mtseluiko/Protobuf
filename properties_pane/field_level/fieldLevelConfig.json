@@ -134,9 +134,10 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"dependency": {
+				"dependency":{
+					"level": "model",
 					"key": "dbVersion",
-					"value": 2
+					"value": "2"
 				}
 			},
 			{
@@ -149,9 +150,10 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"dependency": {
+				"dependency":{
+					"level": "model",
 					"key": "dbVersion",
-					"value": 3
+					"value": "3"
 				}
 			},
 			"default",
