@@ -192,7 +192,7 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -201,7 +201,28 @@ making sure that you maintain a proper JSON format.
 					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			"default",
 			"enum",
@@ -239,7 +260,7 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -248,7 +269,28 @@ making sure that you maintain a proper JSON format.
 					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			{
 				"propertyName": "Default type URL",
@@ -302,7 +344,7 @@ making sure that you maintain a proper JSON format.
 				"valueType": "string"
 			},
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -311,7 +353,28 @@ making sure that you maintain a proper JSON format.
 					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -369,7 +432,7 @@ making sure that you maintain a proper JSON format.
 				"valueType": "string"
 			},
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -378,7 +441,28 @@ making sure that you maintain a proper JSON format.
 					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -423,7 +507,7 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -432,7 +516,28 @@ making sure that you maintain a proper JSON format.
 					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -477,7 +582,7 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -486,7 +591,28 @@ making sure that you maintain a proper JSON format.
 					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -531,7 +657,7 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -540,7 +666,28 @@ making sure that you maintain a proper JSON format.
 					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			"default",
 			"dependencies",
@@ -576,15 +723,37 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Repetition level",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
 					"required",
-					"optional"
+					"optional",
+					"repeated"
 				],
 				"data": "options",
-				"valueType": "string"
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
 			},
 			"minProperties",
 			"maxProperties",
@@ -617,6 +786,39 @@ making sure that you maintain a proper JSON format.
 			"code",
 			"schemaId",
 			"type",
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"required",
+					"optional",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "2"
+				}
+			},
+			{
+				"propertyName": "Field rules",
+				"propertyKeyword": "repetition",
+				"propertyType": "select",
+				"options": [
+					"singular",
+					"repeated"
+				],
+				"data": "options",
+				"valueType": "string",
+				"dependency":{
+					"level": "model",
+					"key": "dbVersion",
+					"value": "3"
+				}
+			},
 			"required",
 			{
 				"propertyName": "Allow alias",
@@ -694,22 +896,74 @@ making sure that you maintain a proper JSON format.
 			"minProperties",
 			"maxProperties",
 			{
-				"propertyName": "Options",
-				"propertyKeyword": "options",
+				"propertyName": "Meta properties",
 				"propertyType": "group",
-				"propertyTooltip": "",
+				"propertyKeyword": "metaProps",
 				"structure": [
 					{
 						"propertyName": "Key",
-						"propertyKeyword": "optionKey",
-						"propertyType": "text"
+						"propertyKeyword": "metaKey",
+						"propertyType": "select",
+						"options": [
+							"java-element",
+							"java-element-class",
+							"java-class",
+							"java-key-class"
+						]
 					},
 					{
 						"propertyName": "Value",
-						"propertyKeyword": "optionValue",
-						"propertyType": "details",
-						"template": "textarea",
-						"markdown": false
+						"propertyKeyword": "metaValue",
+						"propertyTooltip": "",
+						"propertyType": "text",
+						"dependency": { 
+							"key": "metaKey",
+							"value": ""
+						}
+					},
+					{
+						"propertyName": "Value",
+						"propertyKeyword": "metaValueElement",
+						"propertyNameFull": "Meta value for element",
+						"propertyTooltip": "",
+						"propertyType": "text",
+						"dependency": { 
+							"key": "metaKey",
+							"value": "java-element"
+						}
+					},
+					{
+						"propertyName": "Value",
+						"propertyKeyword": "metaValueElementClass",
+						"propertyNameFull": "Meta value for element class",
+						"propertyTooltip": "",
+						"propertyType": "text",
+						"dependency": { 
+							"key": "metaKey",
+							"value": "java-element-class"
+						}
+					},
+					{
+						"propertyName": "Value",
+						"propertyKeyword": "metaValueClass",
+						"propertyNameFull": "Meta value for class",
+						"propertyTooltip": "",
+						"propertyType": "text",
+						"dependency": { 
+							"key": "metaKey",
+							"value": "java-class"
+						}
+					},
+					{
+						"propertyName": "Value",
+						"propertyKeyword": "metaValueKeyClass",
+						"propertyNameFull": "Meta value for key class",
+						"propertyTooltip": "",
+						"propertyType": "text",
+						"dependency": { 
+							"key": "metaKey",
+							"value": "java-key-class"
+						}
 					}
 				]
 			},
