@@ -1,37 +1,50 @@
 'use strict'
 
-const fileReadWriteService = require('./services/fileReadWriteService');
-const JSONConvertService = require('./services/JSONConvertService');
-const wrapFieldsIntoJSONSchema = require('./helpers/wrapFieldsIntoJSONSchema');
-const includeMetadataInJSONSchema = require('./helpers/includeMetadataInJSONSchema');
-const pipe = require('../helpers/pipe');
-const path = require('path');
+const fs = require('fs');
+const antlr4 = require('antlr4');
+const Protobuf3Lexer = require('./parser/Protobuf3Lexer');
+const Protobuf3Parser = require('./parser/Protobuf3Parser');
+const protoToCollectionsVisitor = require('./protobufToCollectionsVisitor');
+const ExprErrorListener = require('./antlrErrorListener');
+const { setDependencies, dependencies } = require('./appDependencies');
+const {convertParsedFileDataToCollections} = require('./services/converterService')
 
 module.exports = {
-	async reFromFile(data, logger, callback) {
+	reFromFile: async (data, logger, callback, app) => {
 		try {
-			const { filePath } = data;
-			const fileName = path.basename(filePath, '.parquet');
-			const { schema, metadata, rowGroups } = await fileReadWriteService.readParquetFile(filePath);
-			const JSONSchema = JSONConvertService.convertFieldSchemasToJSON(schema);
-			const preparedJSONSchema = pipe([
-				wrapFieldsIntoJSONSchema(fileName),
-				includeMetadataInJSONSchema(metadata),
-			])(JSONSchema);
-
-			callback(null, {
-				containerName:"New namespace",
-				jsonSchema: JSON.stringify( { ...preparedJSONSchema, rowGroups }, null, 4),
-			});
-		} catch(error) {
-			const fileName = path.basename(data.filePath);
+			setDependencies(app);
+			const input = await handleFileData(data.filePath);
+			const chars = new antlr4.InputStream(input);
+			const lexer = new Protobuf3Lexer.Protobuf3Lexer(chars);
+	
+			const tokens = new antlr4.CommonTokenStream(lexer);
+			const parser = new Protobuf3Parser.Protobuf3Parser(tokens);
+			parser.removeErrorListeners();
+			parser.addErrorListener(new ExprErrorListener());
+			const fileDefinitions = parser.proto().accept(new protoToCollectionsVisitor());
+			const result = convertParsedFileDataToCollections(fileDefinitions);
+			callback(null, result, {}, [], 'multipleSchema');
+		}catch(e){
 			const errorObject = {
-				message: `${error.message}\nFile name: ${fileName}`,
-				stack: error.stack,
+				message: ``,
+				stack: e.stack,
 			};
 
-			logger.log('error', errorObject, 'Parquet Reverse-Engineering Error');
+			logger.log('error', errorObject, 'Protobuf file Reverse-Engineering Error');
 			callback(errorObject);
 		}
-	}
+	},
 };
+
+const handleFileData = filePath => {
+	return new Promise((resolve, reject) => {
+
+		fs.readFile(filePath, 'utf-8', (err, content) => {
+			if(err) {
+				reject(err);
+			} else {
+				resolve(content);
+			}
+		});
+	});
+}

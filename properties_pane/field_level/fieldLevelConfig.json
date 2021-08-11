@@ -826,11 +826,24 @@ making sure that you maintain a proper JSON format.
 				"propertyType": "checkbox"
 			},
 			{
-				"propertyName": "List of values",
-				"propertyType": "text",
-				"propertyKeyword": "symbols",
-				"multi": true,
-				"valueType": "array"
+				"propertyName": "List of constants",
+				"propertyKeyword": "listOfConstants",
+				"propertyType": "group",
+				"propertyTooltip": "",
+				"valueType": "array",
+				"structure": [
+					{
+						"propertyName": "Constant",
+						"propertyKeyword": "constant",
+						"propertyType": "text"
+					},
+					{
+						"propertyName": "Value",
+						"propertyKeyword": "value",
+						"propertyType": "text",
+						"markdown": false
+					}
+				]
 			},
 			{
 				"propertyName": "Reserved values",

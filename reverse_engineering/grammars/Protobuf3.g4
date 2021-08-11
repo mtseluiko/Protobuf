@@ -14,13 +14,13 @@ proto
 // Syntax
 
 syntax
-  : SYNTAX EQ (PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE) SEMI
+  : SYNTAX EQ version=(PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE | PROTO2_LIT_SINGLE | PROTO2_LIT_DOBULE) SEMI
   ;
 
 // Import Statement
 
 importStatement
-  : IMPORT ( WEAK | PUBLIC )? strLit SEMI
+  : IMPORT accessModifier=( WEAK | PUBLIC )? strLit SEMI
   ;
 
 // Package
@@ -237,7 +237,7 @@ messageType: ( DOT )? ( ident DOT )* messageName;
 enumType: ( DOT )? ( ident DOT )* enumName;
 
 intLit: INT_LIT;
-strLit: STR_LIT | PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE;
+strLit: STR_LIT | PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE| PROTO2_LIT_SINGLE | PROTO2_LIT_DOBULE;
 boolLit: BOOL_LIT;
 floatLit: FLOAT_LIT;
 
@@ -248,6 +248,8 @@ WEAK: 'weak';
 PUBLIC: 'public';
 PACKAGE: 'package';
 OPTION: 'option';
+OPTIONAL: 'optional';
+REQUIRED: 'required';
 REPEATED: 'repeated';
 ONEOF: 'oneof';
 MAP: 'map';
@@ -278,6 +280,8 @@ RETURNS: 'returns';
 
 PROTO3_LIT_SINGLE: '"proto3"';
 PROTO3_LIT_DOBULE: '\'proto3\'';
+PROTO2_LIT_SINGLE: '"proto2"';
+PROTO2_LIT_DOBULE: '\'proto2\'';
 
 // symbols
 
@@ -333,6 +337,8 @@ keywords
   | PUBLIC
   | PACKAGE
   | OPTION
+  | OPTIONAL
+  | REQUIRED
   | REPEATED
   | ONEOF
   | MAP

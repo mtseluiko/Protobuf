@@ -22,6 +22,7 @@
             "enableForwardEngineering": true,
             "disableMultipleTypes": true,
             "enableReverseEngineering": true,
+            "externalDefinitionsFromTargetSchema": true,
             "disableChoices": {
 				"anyOf": true,
 				"allOf": true,
