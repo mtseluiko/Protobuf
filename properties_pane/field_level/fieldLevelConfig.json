@@ -156,6 +156,11 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
+			},
 			"default",
 			"enum",
 			"dependencies",
@@ -224,6 +229,11 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
+			},
 			"default",
 			"enum",
 			"dependencies",
@@ -291,6 +301,11 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
+			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
 			},
 			{
 				"propertyName": "Default type URL",
@@ -375,6 +390,11 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
+			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -464,6 +484,11 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
+			},
 			"minimum",
 			"exclusiveMinimum",
 			"maximum",
@@ -538,6 +563,11 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
+			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -614,6 +644,11 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
+			},
 			"minimum",
 			"exclusiveMinimum",
 			"maximum",
@@ -689,6 +724,11 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
+			},
 			"default",
 			"dependencies",
 			"sample",
@@ -755,6 +795,11 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
+			},
 			"minProperties",
 			"maxProperties",
 			"dependencies",
@@ -818,6 +863,11 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
+			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
 			},
 			"required",
 			{
@@ -904,6 +954,11 @@ making sure that you maintain a proper JSON format.
 					{ "value": "map<sfixed64>", "name": "sfixed64" },
 					{ "value": "map<bool>", "name": "bool" }
 				]
+			},
+			{
+				"propertyName": "Field number",
+				"propertyKeyword": "fieldNumber",
+				"propertyType": "text"
 			},
 			"dependencies",
 			"minProperties",
