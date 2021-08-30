@@ -159,7 +159,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"default",
 			"enum",
@@ -232,7 +234,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"default",
 			"enum",
@@ -305,7 +309,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			{
 				"propertyName": "Default type URL",
@@ -394,7 +400,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -487,7 +495,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -567,7 +577,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -647,7 +659,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -727,7 +741,9 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"default",
 			"dependencies",
@@ -798,15 +814,35 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"enableForReference": true,
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"minProperties",
 			"maxProperties",
 			"dependencies",
 			"additionalProperties",
 			{
+				"propertyName": "Reserved field numbers",
+				"propertyKeyword": "reservedFieldNumbers",
+				"propertyTooltip": "Popup for multi-line text entry",
+				"propertyType": "details",
+				"markdown": false,
+				"template": "textarea"
+			},
+			{
+				"propertyName": "Reserved field names",
+				"propertyKeyword": "reservedFieldNames",
+				"propertyTooltip": "Popup for multi-line text entry",
+				"propertyType": "details",
+				"markdown": false,
+				"template": "textarea"
+			},
+			{
 				"propertyName": "Options",
 				"propertyKeyword": "fieldOptions",
+				"enableForReference": true,
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -867,7 +903,10 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"enableForReference": true,	
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"required",
 			{
@@ -896,8 +935,16 @@ making sure that you maintain a proper JSON format.
 				]
 			},
 			{
-				"propertyName": "Reserved values",
-				"propertyKeyword": "textareaProp",
+				"propertyName": "Reserved field numbers",
+				"propertyKeyword": "reservedFieldNumbers",
+				"propertyTooltip": "Popup for multi-line text entry",
+				"propertyType": "details",
+				"markdown": false,
+				"template": "textarea"
+			},
+			{
+				"propertyName": "Reserved field names",
+				"propertyKeyword": "reservedFieldNames",
 				"propertyTooltip": "Popup for multi-line text entry",
 				"propertyType": "details",
 				"markdown": false,
@@ -908,6 +955,7 @@ making sure that you maintain a proper JSON format.
 			{
 				"propertyName": "Options",
 				"propertyKeyword": "fieldOptions",
+				"enableForReference": true,
 				"propertyType": "group",
 				"propertyTooltip": "",
 				"structure": [
@@ -956,9 +1004,17 @@ making sure that you maintain a proper JSON format.
 				]
 			},
 			{
+				"propertyName": "Value type",
+				"propertyKeyword": "value_type",
+				"propertyType": "text"
+			},
+			{
 				"propertyName": "Field number",
 				"propertyKeyword": "fieldNumber",
-				"propertyType": "text"
+				"enableForReference": true,
+				"shouldValidate": false,
+				"propertyType": "numeric",
+				"valueType": "number"
 			},
 			"dependencies",
 			"minProperties",
