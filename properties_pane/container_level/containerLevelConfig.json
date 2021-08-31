@@ -159,7 +159,22 @@ making sure that you maintain a proper JSON format.
 						"propertyName": "Value",
 						"propertyKeyword": "optionValue",
 						"propertyType": "details",
-						"template": "textarea",
+						"template": "text",
+						"markdown": false
+					}
+				]
+			},
+			{
+				"propertyName": "Imports",
+				"propertyKeyword": "imports",
+				"propertyType": "group",
+				"propertyTooltip": "",
+				"structure": [
+					{
+						"propertyName": "Package name",
+						"propertyKeyword": "packageName",
+						"propertyType": "details",
+						"template": "text",
 						"markdown": false
 					}
 				]

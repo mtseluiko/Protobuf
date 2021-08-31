@@ -1,6 +1,6 @@
 const { dependencies } = require('../appDependencies');
 const { MAP_TYPE, ENUM_TYPE, ENUM_OPTION_TYPE,
-    ENUM_FIELD_TYPE, ONE_OF_TYPE, MESSAGE_TYPE, RESERVED_FIELD_TYPE } = require('../helpers/parsingEntitiesTypes')
+    ENUM_FIELD_TYPE, ONE_OF_TYPE, MESSAGE_TYPE, RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE } = require('../helpers/parsingEntitiesTypes')
 
 const NEW_DATABASE = 'New File'
 
@@ -13,36 +13,52 @@ const convertParsedFileDataToCollections = parsedData => {
             optionKey: option.name,
             optionValue: option.value
         }))
+    const imports = _.get(parsedData, 'imports', []).map(importItem => ({packageName: importItem.value}));
     const messages = _.get(parsedData, 'messages', []).map(message => {
         return {
             objectNames: {
                 collectionName: message.name,
             },
             doc: {
+                modelDefinitions: { definitions: enumDefinitions },
                 dbName,
                 collectionName: message.name,
                 bucketInfo: {
                     options,
-                    package: dbName
+                    package: dbName,
+                    imports
                 },
                 entityLevel: {},
                 views: [],
             },
-            jsonSchema: getJsonSchema(message)
+            jsonSchema: getJsonSchema(message, enumDefinitions)
         }
     })
 
     return messages;
 }
 
-const getJsonSchema = message => {
+const getJsonSchema = (message, modelDefinitions) => {
+    const internalDefinitions = message.body
+        .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
+        .map(field => getConverter(field.elementType)({ field }));
+    const internalDefinitionsNames = internalDefinitions.map(definition => definition.name);
+    const modelDefinitionsNames = modelDefinitions.map(definition => definition.name);
     const properties = message.body
-        .filter(field => field.elementType !== RESERVED_FIELD_TYPE)
-        .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)(field) }), {});
+        .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
+        .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)({ field, internalDefinitionsNames, modelDefinitionsNames }) }), {});
+    const options = message.body
+        .filter(field => field.elementType === OPTION_FIELD_TYPE)
+        .map(option => ({
+            optionKey: option.name,
+            optionValue: option.value
+        }))
     return {
         collectionName: message.name,
         properties,
-        type: 'object'
+        type: 'object',
+        options,
+        definitions: internalDefinitions
     }
 }
 
@@ -60,18 +76,20 @@ const getConverter = (elementType) => {
             return generalFieldConverter;
     }
 }
-const generalFieldConverter = field => {
+const generalFieldConverter = ({ field, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     return {
-        ...getType(field.type),
+        ...getType({ type: field.type, internalDefinitionsNames, modelDefinitionsNames }),
         repetition: field.repeated ? 'repeated' : 'singular',
         fieldOptions: field.options,
+        fieldNumber: field.fieldNumber
     }
 }
 
-const enumFieldConverter = field => {
+const enumFieldConverter = ({ field }) => {
     const convertedEnum = convertEnum(field);
     const allow_alias = convertedEnum.fieldOptions.some(option => option.optionKey === 'allow_alias');
     return {
+        name: field.name,
         type: 'enum',
         fieldOptions: convertedEnum.fieldOptions,
         listOfConstants: convertedEnum.listOfConstants,
@@ -79,11 +97,11 @@ const enumFieldConverter = field => {
     }
 }
 
-const oneOfFieldConverter = field => {
+const oneOfFieldConverter = ({ field, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     const properties = field.fields.map(choice => {
         return {
             'type': 'subschema',
-            properties: [{ ...generalFieldConverter(choice), name: choice.name }],
+            properties: [{ ...generalFieldConverter({ field: choice, internalDefinitionsNames, modelDefinitionsNames }), name: choice.name }],
         }
     })
     return {
@@ -93,26 +111,45 @@ const oneOfFieldConverter = field => {
     }
 }
 
-const messageFieldConverter = message => {
+const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     const properties = message.body
-        .filter(field => field.elementType !== RESERVED_FIELD_TYPE)
-        .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)(field) }), {});
+        .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE].includes(field.elementType))
+        .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)({ field, internalDefinitionsNames, modelDefinitionsNames }) }), {});
+    const options = message.body
+        .filter(field => field.elementType === OPTION_FIELD_TYPE)
+        .map(option => ({
+            optionKey: option.name,
+            optionValue: option.value
+        }))
     return {
+        name: message.name,
         'childType': 'message',
         'type': 'document',
-        properties
+        properties,
+        fieldOptions: options
     }
 }
 
-const mapFieldConverter = field => ({
+const mapFieldConverter = ({ field }) => ({
     type: 'map',
-    key_type: getMapKeyType(field.type),
+    key_type: getMapKeyType(field.keyType),
+    value_type: field.type,
     fieldOptions: field.options
 })
 
 
-const getType = (type) => {
+const getType = ({ type, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     let unwrappedType = type;
+    if (internalDefinitionsNames.includes(type)) {
+        return {
+            $ref: `#/definitions/${type}`
+        }
+    }
+    if (modelDefinitionsNames.includes(type)) {
+        return {
+            $ref: `#model/definitions/${type}`
+        }
+    }
     if (type.startsWith('google.protobuf.')) {
         unwrappedType = type.replace('google.protobuf.', '').replace('Value', '').toLowerCase();
     }
@@ -177,10 +214,13 @@ const convertEnum = parsedEnum => {
             constant: constant.name,
             value: constant.value
         }))
+    const allow_alias = fieldOptions.some(option => option.optionKey === 'allow_alias');
     return {
         name: parsedEnum.name,
         fieldOptions,
-        listOfConstants
+        listOfConstants,
+        type: ENUM_TYPE,
+        allow_alias
     }
 };
 

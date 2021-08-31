@@ -3,7 +3,7 @@ const { dependencies } = require('./appDependencies');
 const {
 	MESSAGE_TYPE, ENUM_TYPE, ENUM_OPTION_TYPE,
 	ENUM_FIELD_TYPE, FIELD_TYPE, ONE_OF_TYPE,
-	ONE_OF_FIELD_TYPE, RESERVED_FIELD_TYPE, MAP_TYPE
+	ONE_OF_FIELD_TYPE, RESERVED_FIELD_TYPE, MAP_TYPE, OPTION_FIELD_TYPE
 } = require('./helpers/parsingEntitiesTypes')
 
 
@@ -48,6 +48,7 @@ class Visitor extends Protobuf3Visitor {
 		const name = getName(ctx.optionName());
 		const value = getName(ctx.constant());
 		return {
+			elementType: OPTION_FIELD_TYPE,
 			name,
 			value
 		};
@@ -61,11 +62,10 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitMessageDef(ctx) {
-		const elementType = MESSAGE_TYPE;
 		const name = getName(ctx.messageName());
 		const body = this.visit(ctx.messageBody());
 		return {
-			elementType,
+			elementType: MESSAGE_TYPE,
 			name,
 			body
 		};
@@ -76,24 +76,24 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitMessageElement(ctx) {
+		const option = this.visitIfExists(ctx, 'optionStatement')
 		const field = this.visitIfExists(ctx, 'field');
 		const messageDef = this.visitIfExists(ctx, 'messageDef');
 		const enumDef = this.visitIfExists(ctx, 'enumDef');
 		const oneOf = this.visitIfExists(ctx, 'oneof');
 		const mapField = this.visitIfExists(ctx, 'mapField');
 		const reserved = this.visitIfExists(ctx, 'reserved');
-		return field || messageDef || enumDef || oneOf || mapField || reserved;
+		return field || messageDef || enumDef || oneOf || mapField || reserved || option;
 	}
 
 	visitField(ctx) {
-		const elementType = FIELD_TYPE;
 		const type = getName(ctx.type_());
 		const name = getName(ctx.fieldName());
 		const fieldNumber = getName(ctx.fieldNumber());
 		const repeated = this.visitFlagValue(ctx, 'REPEATED');
 		const options = this.visitIfExists(ctx, 'fieldOptions', []);
 		return {
-			elementType,
+			elementType: FIELD_TYPE,
 			type,
 			name,
 			fieldNumber,
@@ -116,11 +116,10 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitEnumDef(ctx) {
-		const elementType = ENUM_TYPE;
 		const name = getName(ctx.enumName());
 		const body = this.visit(ctx.enumBody());
 		return {
-			elementType,
+			elementType: ENUM_TYPE,
 			name,
 			body
 		};
@@ -172,12 +171,11 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitOneof(ctx) {
-		const elementType = ONE_OF_TYPE;
 		const name = getName(ctx.oneofName());
 		const options = this.visitIfExists(ctx, 'optionStatement');
 		const fields = this.visitIfExists(ctx, 'oneofField');
 		return {
-			elementType,
+			elementType: ONE_OF_TYPE,
 			name,
 			options,
 			fields
@@ -185,13 +183,12 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitOneofField(ctx) {
-		const elementType = ONE_OF_FIELD_TYPE;
 		const type = getName(ctx.type_());
 		const name = getName(ctx.fieldName());
 		const fieldNumber = getName(ctx.fieldNumber());
 		const options = this.visitIfExists(ctx, 'fieldOptions', []);
 		return {
-			elementType,
+			elementType: ONE_OF_FIELD_TYPE,
 			type,
 			name,
 			fieldNumber,
@@ -200,14 +197,13 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitMapField(ctx) {
-		const elementType = MAP_TYPE;
 		const keyType = getName(ctx.keyType());
 		const type = getName(ctx.type_());
 		const name = getName(ctx.mapName());
 		const fieldNumber = getName(ctx.fieldNumber());
 		const options = this.visitIfExists(ctx, 'fieldOptions', []);
 		return {
-			elementType,
+			elementType: MAP_TYPE,
 			keyType,
 			type,
 			name,

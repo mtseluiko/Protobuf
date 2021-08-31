@@ -7,5 +7,6 @@ module.exports = {
     ONE_OF_TYPE : 'one_of',
     ONE_OF_FIELD_TYPE : 'one_of_fied',
     RESERVED_FIELD_TYPE : 'reserved',
+    OPTION_FIELD_TYPE : 'option',
     MAP_TYPE : 'map',
 }
