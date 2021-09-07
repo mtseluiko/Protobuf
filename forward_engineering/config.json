@@ -1,8 +1,26 @@
 {
-	"extension": "txt",
-	"filterName": "Dremel paper",
-	"namePrefix": "Parquet",
+	"extension": "proto",
+	"filterName": "Protobuf",
+	"namePrefix": "Protobuf",
 	"hasUpdateScript": false,
+	"applyScriptToInstance": true,
+	"options": [
+		{
+			"name": "Proto Schema",
+			"keyword": "protoSchema",
+			"disableApplyScriptToInstance": true
+		  },
+		{
+		  "name": "Confluent API Schema",
+		  "keyword": "confluentSchemaRegistry",
+		  "isApplicationHandler": true
+		},
+		{
+		  "name": "Pulsar Schema Registry",
+		  "keyword": "pulsarSchemaRegistry",
+		  "isApplicationHandler": true
+		}
+	  ],
 	"level": {
 		"entity": true,
 		"container": {
@@ -11,12 +29,6 @@
 			{
 			  "name": "Confluent API Schema",
 			  "keyword": "confluentSchemaRegistry",
-			  "mode": "json",
-			  "isApplicationHandler": true
-			},
-			{
-			  "name": "Azure Schema Registry",
-			  "keyword": "azureSchemaRegistry",
 			  "mode": "json",
 			  "isApplicationHandler": true
 			},

@@ -239,7 +239,9 @@ const getReferencedDefinition = (definitions, referenceId) => {
 
 const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {
     const fieldRules = protoVersion === 'proto2' ? PROTO_2_FIELD_RULES : PROTO_3_FIELD_RULES;
-
+    if(fieldRule === 'singular'){
+        return '';
+    }
     if (fieldRules.includes(fieldRule)) {
         return `${fieldRule} `
     }
