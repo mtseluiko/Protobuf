@@ -206,7 +206,6 @@ making sure that you maintain a proper JSON format.
 				"propertyType": "select",
 				"options": [
 					"",
-					"required",
 					"optional",
 					"repeated"
 				],
@@ -1001,8 +1000,8 @@ making sure that you maintain a proper JSON format.
 			"schemaId",
 			"type",
 			{
-				"propertyName": "Key type",
-				"propertyKeyword": "key_type",
+				"propertyName": "Value type",
+				"propertyKeyword": "value_type",
 				"typeDecorator": {
 					"useAsTypeName": true
 				},
@@ -1020,12 +1019,13 @@ making sure that you maintain a proper JSON format.
 					{ "value": "map<fixed64>", "name": "fixed64" },
 					{ "value": "map<sfixed32>", "name": "sfixed32" },
 					{ "value": "map<sfixed64>", "name": "sfixed64" },
+					{ "value": "map<udt>", "name": "udt" },
 					{ "value": "map<bool>", "name": "bool" }
 				]
 			},
 			{
-				"propertyName": "Value type",
-				"propertyKeyword": "value_type",
+				"propertyName": "UDT value type",
+				"propertyKeyword": "udt_value_type",
 				"propertyType": "text"
 			},
 			{

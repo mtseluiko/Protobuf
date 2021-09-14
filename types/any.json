@@ -4,9 +4,6 @@
 	"dtdAbbreviation": "{any}",
 	"useSample": true,
 	"parentType": "string",
-	"jsonType": {
-		"order": 1
-	},
 	"defaultValues": {
 		"minLength": "",
 		"maxLength": "",

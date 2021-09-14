@@ -4,6 +4,7 @@
 	"dtdAbbreviation": "{str}",
 	"useSample": true,
 	"parentType": "string",
+	"default": true,
 	"jsonType": {
 		"order": 1
 	},
