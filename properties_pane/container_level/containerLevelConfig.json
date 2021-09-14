@@ -159,7 +159,7 @@ making sure that you maintain a proper JSON format.
 						"propertyName": "Value",
 						"propertyKeyword": "optionValue",
 						"propertyType": "details",
-						"template": "text",
+						"template": "textarea",
 						"markdown": false
 					}
 				]
@@ -174,7 +174,7 @@ making sure that you maintain a proper JSON format.
 						"propertyName": "Package name",
 						"propertyKeyword": "packageName",
 						"propertyType": "details",
-						"template": "text",
+						"template": "textarea",
 						"markdown": false
 					}
 				]
