@@ -130,12 +130,15 @@ const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], 
     }
 }
 
-const mapFieldConverter = ({ field }) => ({
-    type: 'map',
-    key_type: getMapKeyType(field.keyType),
-    value_type: field.type,
-    fieldOptions: field.options
-})
+const mapFieldConverter = ({ field }) => {
+    const subtype = getMapKeyType(field.type);
+    return {
+        type: 'map',
+        subtype,
+        udt_value_type: subtype === 'map<udt>' ? field.type : '',
+        fieldOptions: field.options
+    }
+}
 
 
 const getType = ({ type, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
@@ -186,6 +189,7 @@ const getMapKeyType = (type) => {
         unwrappedType = type.replace('google.protobuf.', '').replace('Value', '').toLowerCase();
     }
     switch (unwrappedType) {
+        case 'string':
         case 'bool':
         case 'fixed32':
         case 'fixed64':
@@ -199,7 +203,7 @@ const getMapKeyType = (type) => {
         case 'sint64':
             return `map<${unwrappedType}>`;
         default:
-            return `map<string>`
+            return `map<udt>`
     }
 }
 

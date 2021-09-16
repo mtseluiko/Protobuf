@@ -24,13 +24,16 @@
             "enableReverseEngineering": true,
             "externalDefinitionsFromTargetSchema": true,
             "disableChoices": {
-				"anyOf": true,
-				"allOf": true,
-				"not": true
-			},
+                "anyOf": true,
+                "allOf": true,
+                "not": true
+            },
             "enableJsonType": false
         }
     },
     "description": "Hackolade plugin for Protocol Buffers",
-    "disabled": false
+    "disabled": false,
+    "dependencies": {
+        "protobufjs": "^6.11.2"
+    }
 }

@@ -40,5 +40,11 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	"schemaRegistry": {
+		"jsonLikeSchema": false,
+		"defaultRegexp": "^POST \\/(.*)$\n\n([\\s\\S]*)",
+		"regexp": "^POST \\/(.*)$\n\n([\\s\\S]*)",
+		"confluentSchemaType": "PROTOBUF"
+	}
 }

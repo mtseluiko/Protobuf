@@ -5,7 +5,7 @@
 	"parentType": "document",
 	"useSample": true,
 	"defaultValues": {
-		"key_type": "map<string>",
+		"subtype": "map<string>",
 		"dependencies": [],
 		"primaryKey": false,
 		"properties": [],
@@ -19,34 +19,34 @@
 			"childValueType": "string"
 		},
 		"map<int32>": {
-			"childValueType": "number"
+			"childValueType": "int"
 		},
 		"map<int64>": {
-			"childValueType": "number"
+			"childValueType": "int"
 		},
 		"map<sint32>": {
-			"childValueType": "number"
+			"childValueType": "int"
 		},
 		"map<sint64>": {
-			"childValueType": "number"
+			"childValueType": "int"
 		},
-		"map<uin32>": {
-			"childValueType": "number"
+		"map<uint32>": {
+			"childValueType": "int"
 		},
 		"map<uint64>": {
-			"childValueType": "number"
+			"childValueType": "int"
 		},
 		"map<fixed32>": {
-			"childValueType": "number"
+			"childValueType": "fixed"
 		},
 		"map<fixed64>": {
-			"childValueType": "number"
+			"childValueType": "fixed"
 		},
 		"map<sfixed32>": {
-			"childValueType": "number"
+			"childValueType": "fixed"
 		},
 		"map<sfixed64>": {
-			"childValueType": "number"
+			"childValueType": "fixed"
 		},
 		"map<bool>": {
 			"childValueType": "bool"

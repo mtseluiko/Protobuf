@@ -180,6 +180,28 @@ making sure that you maintain a proper JSON format.
 				]
 			},
 			{
+				"propertyName": "Confluent schema type",
+				"propertyKeyword": "schemaType",
+				"propertyTooltip": "Select from list of options",
+				"propertyType": "select",
+				"options": [
+					"",
+					"key",
+					"value"
+				]
+			},
+			{
+				"propertyName": "Pulsar topic name",
+				"propertyKeyword": "pulsarTopicName",
+				"propertyType": "text"
+			},
+			{
+				"propertyName": "Is non-persistent Pulsar topic",
+				"propertyKeyword": "isNonPersistentTopic",
+				"propertyType": "checkbox",
+				"template": "boolean"
+			},
+			{
 				"propertyName": "Comments",
 				"propertyKeyword": "comments",
 				"propertyTooltip": "comments",

@@ -3,6 +3,8 @@ const { generateCollectionScript } = require('./services/protoScriptGenerationSe
 const { setDependencies, dependencies } = require('../reverse_engineering/appDependencies');
 const RECORD_NAME_STRATEGY = 'RecordNameStrategy';
 const TOPIC_RECORD_NAME_STRATEGY = 'TopicRecordNameStrategy';
+const protobufjs   = require("protobufjs")
+const descriptor = require("protobufjs/ext/descriptor");
 module.exports = {
 	generateContainerScript(data, logger, callback, app) {
 		setDependencies(app);
@@ -82,31 +84,46 @@ module.exports = {
 			return this.getConfluentPostQuery({ data, schema: script });
 		}
 		if (targetSchemaRegistry === 'pulsarSchemaRegistry') {
-			const bodyObject = {
-				type: "PROTOBUF",
-				data: script,
-				properties: {}
-			}
-			const schema = needMinify ? JSON.stringify(bodyObject) : JSON.stringify(bodyObject, null, 4);
-
-			const namespace = _.get(data, 'containerData.name', '');
-			const topic = _.get(data, 'entityData.pulsarTopicName', '');
-			const persistence = _.get(data, 'entityData.isNonPersistentTopic', false) ? 'non-persistent' : 'persistent';
-			return `POST /${persistence}/${namespace}/${topic}/schema\n${script}`
+			return this.getPulsarPostQuery({ data, schema: script })
 		}
 
 		return script;
+	},
+
+	getPulsarPostQuery({ data, schema }){
+		const _ = dependencies.lodash;
+		const root = protobufjs.parse(schema).root;
+		const descriptorMsg = root.toDescriptor("proto3");
+		const buffer = descriptor.FileDescriptorSet.encode(descriptorMsg).finish();
+		const fileDescriptorSet  = buffer.toString('base64')
+		const descriptorJson = descriptorMsg.toJSON();
+		const rootMessageTypeName = `${_.get(descriptorJson, 'file[0].package')}.${_.get(descriptorJson, 'file[0].messageType[0].name')}`;
+		const rootFileDescriptorName = _.get(descriptorJson, 'file[0].name')
+		const body = {
+			fileDescriptorSet,
+			rootMessageTypeName,
+			rootFileDescriptorName
+		}
+		const bodyObject = {
+			type: "PROTOBUF_NATIVE",
+			data: body,
+			properties: {}
+		}
+		const namespace = _.get(data, 'containerData[0].name', '');
+		const topic =  _.get(data, 'containerData[0].pulsarTopicName', '');
+		const persistence =  _.get(data, 'containerData[0].isNonPersistentTopic', false) ? 'non-persistent' : 'persistent';
+		return `POST /${persistence}/${namespace}/${topic}/schema\n\n${JSON.stringify(bodyObject, null, 4)}`
 	},
 
 	getConfluentPostQuery({ data, schema }) {
 		const getName = () => {
 			const _ = dependencies.lodash;
 			const name = this.getRecordName(data);
-			const typePostfix = _.has(data, 'entityData.schemaType') ? `-${data.entityData.schemaType}` : '';
-			const containerPrefix = _.has(data, 'containerData.name') ? `${data.containerData.name}.` : '';
-			const topicPrefix = _.has(data, 'modelData.schemaTopic') ? `${data.modelData.schemaTopic}-` : '';
+			const typePostfix = _.has(data, 'containerData[0].schemaType') ? `-${data.containerData[0].schemaType}` : '';
+			const containerPrefix = _.has(data, 'containerData[0].name') ? `${data.containerData[0].name}.` : '';
+			const topicPrefix = _.has(data, 'modelData[0].schemaTopic') ? `${data.modelData[0].schemaTopic}-` : '';
 
-			const schemaNameStrategy = _.get(data, 'modelData.schemaNameStrategy', '');
+			const schemaNameStrategy = _.get(data, 'modelData[0].schemaNameStrategy', '');
 			switch (schemaNameStrategy) {
 				case RECORD_NAME_STRATEGY:
 					return `${containerPrefix}${name}${typePostfix}`
@@ -117,11 +134,7 @@ module.exports = {
 			}
 		}
 
-		return `POST /subjects/${getName()}/versions\n${JSON.stringify(
-			{ schema, schemaType: "PROTOBUF" },
-			null,
-			4
-		)}`;
+		return `POST /subjects/${getName()}/versions\n\n${schema}`;
 	},
 
 	getRecordName(data) {

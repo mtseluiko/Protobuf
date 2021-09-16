@@ -7,7 +7,7 @@ const PROTO_3_FIELD_RULES = ['singular', 'repeated'];
 const ROW_PREFIX = '  '
 
 const getInternalDefinitions = (definitions, messageId) => {
-    if(typeof definitions === 'string'){
+    if (typeof definitions === 'string') {
         return definitions;
     }
 
@@ -34,7 +34,7 @@ const generateCollectionScript = data => {
         externalDefinitions
     }))
 
-    const imports = getImports(externalDefinitions);
+    const imports = getImports(externalDefinitions, containerData.imports);
 
     const message = getMessageStatement({
         jsonSchema,
@@ -147,9 +147,10 @@ const extractDefinitionsFromProperties = properties => {
     }
 }
 
-const getImports = externalDefinitions => {
+const getImports = (externalDefinitions, imports = []) => {
+    const formattedImports = imports.map(({packageName}) => `import '${packageName}';`)
     const importsFromDefinitions = externalDefinitions.map(definition => `import '${definition.link}';`)
-    return [...importsFromDefinitions, `import 'google/protobuf/any.proto';`]
+    return [...importsFromDefinitions, ...formattedImports, `import 'google/protobuf/any.proto';`]
 }
 
 const getOptionStatement = (option, spacePrefix) => `${spacePrefix}option ${option.optionKey} = ${option.optionValue};`
@@ -188,13 +189,19 @@ const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDef
 }
 
 const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, modelDefinitions, externalDefinitions }) => {
+    
+    const getUDT = (udt) => {
+        const _ = dependencies.lodash;
+        return !_.isEmpty(udt) ? udt : 'string'
+    }
     if (isExternalRef) {
         return getDefinitionInfo(externalDefinitions, field.fieldOptions, field.GUID)
     }
     if (!isReference) {
         let fieldType = field.subtype || field.type;
         if (fieldType === 'map') {
-            fieldType = `${field.key_type.slice(0, -1)},${field.value_type}>`
+            const value = field.subtype !== `map<udt>` ? field.subtype.slice(4,-1) : getUDT(field.udt_value_type)
+            fieldType = `map<string,${value}>`
         }
         if (fieldType === 'any') {
             fieldType = 'google.protobuf.Any'
@@ -239,7 +246,7 @@ const getReferencedDefinition = (definitions, referenceId) => {
 
 const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {
     const fieldRules = protoVersion === 'proto2' ? PROTO_2_FIELD_RULES : PROTO_3_FIELD_RULES;
-    if(fieldRule === 'singular'){
+    if (fieldRule === 'singular') {
         return '';
     }
     if (fieldRules.includes(fieldRule)) {

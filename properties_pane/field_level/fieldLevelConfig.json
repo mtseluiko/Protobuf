@@ -363,7 +363,7 @@ making sure that you maintain a proper JSON format.
 					"int64",
 					"sint32",
 					"sint64",
-					"uin32",
+					"uint32",
 					"uint64"
 				],
 				"data": "options",
@@ -1001,7 +1001,7 @@ making sure that you maintain a proper JSON format.
 			"type",
 			{
 				"propertyName": "Value type",
-				"propertyKeyword": "value_type",
+				"propertyKeyword": "subtype",
 				"typeDecorator": {
 					"useAsTypeName": true
 				},
@@ -1013,7 +1013,7 @@ making sure that you maintain a proper JSON format.
 					{ "value": "map<int64>", "name": "int64" },
 					{ "value": "map<sint32>", "name": "sint32" },
 					{ "value": "map<sint64>", "name": "sint64" },
-					{ "value": "map<uin32>", "name": "uin32" },
+					{ "value": "map<uint32>", "name": "uint32" },
 					{ "value": "map<uint64>", "name": "uint64" },
 					{ "value": "map<fixed32>", "name": "fixed32" },
 					{ "value": "map<fixed64>", "name": "fixed64" },
