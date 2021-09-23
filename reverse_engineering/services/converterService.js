@@ -79,7 +79,7 @@ const getConverter = (elementType) => {
 const generalFieldConverter = ({ field, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     return {
         ...getType({ type: field.type, internalDefinitionsNames, modelDefinitionsNames }),
-        repetition: field.repeated ? 'repeated' : 'singular',
+        repetition: field.repetition,
         fieldOptions: field.options,
         fieldNumber: field.fieldNumber
     }

@@ -10,7 +10,7 @@ const {
 class Visitor extends Protobuf3Visitor {
 
 	visitProto(ctx) {
-		const syntaxVersion = this.visit(ctx.syntax());
+		const syntaxVersion = this.visit(ctx.syntax()).slice(-1);
 		const packageName = this.visit(ctx.packageStatement());
 		const options = this.visit(ctx.optionStatement());
 		const imports = this.visit(ctx.importStatement());
@@ -90,14 +90,14 @@ class Visitor extends Protobuf3Visitor {
 		const type = getName(ctx.type_());
 		const name = getName(ctx.fieldName());
 		const fieldNumber = getName(ctx.fieldNumber());
-		const repeated = this.visitFlagValue(ctx, 'REPEATED');
+		const repetition = ctx.repetition?.text;
 		const options = this.visitIfExists(ctx, 'fieldOptions', []);
 		return {
 			elementType: FIELD_TYPE,
 			type,
 			name,
 			fieldNumber,
-			repeated,
+			repetition,
 			options
 		};
 	}

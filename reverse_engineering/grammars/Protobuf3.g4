@@ -43,7 +43,7 @@ optionName
 // Normal Field
 
 field
-  : ( REPEATED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
+  : repetition=( REPEATED | OPTIONAL | REQUIRED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
   ;
 
 fieldOptions

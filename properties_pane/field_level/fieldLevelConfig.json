@@ -206,6 +206,7 @@ making sure that you maintain a proper JSON format.
 				"propertyType": "select",
 				"options": [
 					"",
+					"required",
 					"optional",
 					"repeated"
 				],

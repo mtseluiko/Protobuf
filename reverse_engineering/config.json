@@ -8,6 +8,7 @@
   "usePulsarSchemaRegistry": true,
   "schemaRegistry": {
     "extension": "proto",
-    "schemaType": "PROTOBUF"
+    "confluentSchemaType": "PROTOBUF",
+    "pulsarSchemaType": "PROTOBUF_NATIVE"
   }
 }
