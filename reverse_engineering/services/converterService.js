@@ -13,7 +13,7 @@ const convertParsedFileDataToCollections = parsedData => {
             optionKey: option.name,
             optionValue: option.value
         }))
-    const imports = _.get(parsedData, 'imports', []).map(importItem => ({packageName: importItem.value}));
+    const imports = _.get(parsedData, 'imports', []).map(importItem => ({ packageName: importItem.value }));
     const messages = _.get(parsedData, 'messages', []).map(message => {
         return {
             objectNames: {
@@ -39,6 +39,7 @@ const convertParsedFileDataToCollections = parsedData => {
 }
 
 const getJsonSchema = (message, modelDefinitions) => {
+
     const internalDefinitions = message.body
         .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
         .map(field => getConverter(field.elementType)({ field }));
@@ -53,12 +54,24 @@ const getJsonSchema = (message, modelDefinitions) => {
             optionKey: option.name,
             optionValue: option.value
         }))
+    const { reservedFieldNumbers, reservedFieldNames } = message.body
+        .filter(field => field.elementType === RESERVED_FIELD_TYPE)
+        .reduce((reservedValues, reservedString) => {
+            const formattedString = reservedString.values.join(', ');
+            if (formattedString.match(/[\d+, (?:to)(?:max)]+/gm)) {
+                return { ...reservedValues, reservedFieldNumbers: [...reservedValues.reservedFieldNumbers, formattedString] }
+            } else {
+                return { ...reservedValues, reservedFieldNames: [...reservedValues.reservedFieldNames, reservedString.values.map(str => `'${str}'`).join(', ')] }
+            }
+        }, { reservedFieldNumbers: [], reservedFieldNames: [] });
     return {
         collectionName: message.name,
         properties,
         type: 'object',
         options,
-        definitions: internalDefinitions
+        definitions: internalDefinitions,
+        reservedFieldNumbers: reservedFieldNumbers.join(', '),
+        reservedFieldNames: reservedFieldNames.join(', '),
     }
 }
 
@@ -91,6 +104,7 @@ const enumFieldConverter = ({ field }) => {
     return {
         name: field.name,
         type: 'enum',
+        fieldNumber: field.fieldNumber,
         fieldOptions: convertedEnum.fieldOptions,
         listOfConstants: convertedEnum.listOfConstants,
         allow_alias
@@ -112,8 +126,12 @@ const oneOfFieldConverter = ({ field, internalDefinitionsNames = [], modelDefini
 }
 
 const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
+    const entitiesDefinitionsTypes = message.body
+        .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
+        .reduce((entitiesMap, entity) => ({ ...entitiesMap, [entity.name]: entity }), {})
     const properties = message.body
-        .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE].includes(field.elementType))
+        .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
+        .map(field => ({ ...field, ...(entitiesDefinitionsTypes[field.type] || {}) }))
         .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)({ field, internalDefinitionsNames, modelDefinitionsNames }) }), {});
     const options = message.body
         .filter(field => field.elementType === OPTION_FIELD_TYPE)
@@ -126,6 +144,7 @@ const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], 
         'childType': 'message',
         'type': 'document',
         properties,
+        fieldNumber: message.fieldNumber,
         fieldOptions: options
     }
 }
@@ -180,7 +199,7 @@ const getType = ({ type, internalDefinitionsNames = [], modelDefinitionsNames = 
         case 'sint64':
             return ({ type: 'int', subtype: unwrappedType });
         default:
-            return ({ type: 'any', simpletextProp: type });
+            return ({ type: 'any', typeUrl: type });
     }
 }
 const getMapKeyType = (type) => {

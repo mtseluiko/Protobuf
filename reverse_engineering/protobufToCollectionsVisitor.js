@@ -234,7 +234,7 @@ class Visitor extends Protobuf3Visitor {
 		if (isRange) {
 			const start = getName(ctx.intLit()[0]);
 			const end = getName(ctx.intLit()[1]);
-			return `${start} TO ${end}`
+			return `${start} to ${end}`
 		}
 		return getName(ctx.intLit()[0]);
 	}

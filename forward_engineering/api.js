@@ -5,16 +5,27 @@ const RECORD_NAME_STRATEGY = 'RecordNameStrategy';
 const TOPIC_RECORD_NAME_STRATEGY = 'TopicRecordNameStrategy';
 const protobufjs   = require("protobufjs")
 const descriptor = require("protobufjs/ext/descriptor");
+
+const defaultContainerData = [{
+	code: 'proto_file',
+	imports: [],
+}];
+
 module.exports = {
 	generateContainerScript(data, logger, callback, app) {
 		setDependencies(app);
 		const _ = dependencies.lodash;
 		try {
-			if (_.isEmpty(data.collections)) {
+			const _ = dependencies.lodash;
+			let preparedData = {
+				...data,
+				containerData: !_.isEmpty(data.containerData) ? data.containerData : defaultContainerData
+			}
+			if (_.isEmpty(preparedData.collections)) {
 				callback(null, '');
 			}
-			const { syntax, packageName, imports, modelDefinitionsStatements, options, messages } = data.collections.reduce((processedMessages, message) => {
-				const processedMessage = generateCollectionScript({ ...data, jsonSchema: message });
+			const { syntax, packageName, imports, modelDefinitionsStatements, options, messages } = preparedData.collections.reduce((processedMessages, message) => {
+				const processedMessage = generateCollectionScript({ ...preparedData, jsonSchema: message });
 				return {
 					syntax: processedMessage.syntax,
 					packageName: processedMessage.packageName,
@@ -40,7 +51,7 @@ module.exports = {
 			]
 				.filter(row => row !== '')
 				.join('\n');
-			callback(null, this.prepareScript(script, data));
+			callback(null, this.prepareScript(script, preparedData));
 		} catch (error) {
 			const errorObject = {
 				message: error.message,
@@ -54,11 +65,16 @@ module.exports = {
 	generateScript(data, logger, callback, app) {
 		setDependencies(app);
 		try {
-			const processedMessage = generateCollectionScript(data);
+			const _ = dependencies.lodash;
+			let preparedData = {
+				...data,
+				containerData: !_.isEmpty(data.containerData) ? data.containerData : defaultContainerData
+			}
+			const processedMessage = generateCollectionScript(preparedData);
 			const script = [
 				processedMessage.syntax,
 				processedMessage.packageName,
-				...processedMessage.imports,
+				..._.uniq(processedMessage.imports),
 				' ',
 				...processedMessage.modelDefinitionsStatements,
 				...processedMessage.options,
@@ -66,7 +82,7 @@ module.exports = {
 			]
 				.filter(row => row !== '')
 				.join('\n');
-			callback(null, this.prepareScript(script, data));
+			callback(null, this.prepareScript(script, preparedData));
 		} catch (error) {
 			const errorObject = {
 				message: error.message,

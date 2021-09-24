@@ -133,10 +133,10 @@ const extractDefinitionsFromProperties = properties => {
             const property = {
                 ...value,
                 $ref: `#/definitions/${key}`,
-                title: key.toLowerCase()
+                title: convertEntityTypeToValidName(key)
             }
             return {
-                modifiedProperties: { ...modifiedProperties, [key]: property },
+                modifiedProperties: { ...modifiedProperties, [convertEntityTypeToValidName(key)]: property },
                 extractedDefinitions: [...extractedDefinitions, definition]
             }
 
@@ -146,9 +146,13 @@ const extractDefinitionsFromProperties = properties => {
         properties: modifiedProperties
     }
 }
+const convertEntityTypeToValidName = (type) => {
+    const _ = dependencies.lodash;
+    return _.lowerCase(type).split(' ').join('_');
+}
 
 const getImports = (externalDefinitions, imports = []) => {
-    const formattedImports = imports.map(({packageName}) => `import '${packageName}';`)
+    const formattedImports = imports.map(({ packageName }) => `import '${packageName}';`)
     const importsFromDefinitions = externalDefinitions.map(definition => `import '${definition.link}';`)
     return [...importsFromDefinitions, ...formattedImports, `import 'google/protobuf/any.proto';`]
 }
@@ -189,7 +193,7 @@ const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDef
 }
 
 const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, modelDefinitions, externalDefinitions }) => {
-    
+
     const getUDT = (udt) => {
         const _ = dependencies.lodash;
         return !_.isEmpty(udt) ? udt : 'string'
@@ -200,11 +204,16 @@ const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, 
     if (!isReference) {
         let fieldType = field.subtype || field.type;
         if (fieldType === 'map') {
-            const value = field.subtype !== `map<udt>` ? field.subtype.slice(4,-1) : getUDT(field.udt_value_type)
+            const value = field.subtype !== `map<udt>` ? field.subtype.slice(4, -1) : getUDT(field.udt_value_type)
             fieldType = `map<string,${value}>`
         }
         if (fieldType === 'any') {
-            fieldType = 'google.protobuf.Any'
+            if(field.typeUrl){
+                fieldType = field.typeUrl
+            }else{
+                fieldType = 'google.protobuf.Any'
+            }
+            
         }
         return {
             fieldType,
@@ -239,9 +248,8 @@ const getDefinitionInfo = (definitions, fieldOptions, referenceId) => {
 
 const getReferencedDefinition = (definitions, referenceId) => {
     const _ = dependencies.lodash;
-
     return definitions.find(definition =>
-        definition.definitionRefs.some(ref => _.last(ref) === referenceId))
+        _.get(definition,'definitionRefs',[]).some(ref => _.last(ref) === referenceId))
 }
 
 const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {

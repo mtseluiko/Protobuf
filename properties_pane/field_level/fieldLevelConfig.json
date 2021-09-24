@@ -321,7 +321,7 @@ making sure that you maintain a proper JSON format.
 			},
 			{
 				"propertyName": "Default type URL",
-				"propertyKeyword": "simpletextProp",
+				"propertyKeyword": "typeUrl",
 				"propertyType": "text",
 				"defaultValue": "google.protobuf."
 			},
