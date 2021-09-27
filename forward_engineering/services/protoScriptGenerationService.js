@@ -1,7 +1,6 @@
 const { dependencies } = require('../../reverse_engineering/appDependencies');
+const { formatComment } = require('../helpers/utils');
 
-
-const MAX_CHAR_LENGTH = 10;
 const PROTO_2_FIELD_RULES = ['required', 'optional', 'repeated'];
 const PROTO_3_FIELD_RULES = ['singular', 'repeated'];
 const ROW_PREFIX = '  '
@@ -68,10 +67,7 @@ const getDefinitionStatements = ({ jsonSchema, spacePrefix = '', protoVersion, i
 const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
     const _ = dependencies.lodash;
     const { properties, extractedDefinitions } = extractDefinitionsFromProperties(jsonSchema.properties)
-    const description = !jsonSchema.description ? '' :
-        jsonSchema.description.replaceAll('\n', '').split(' ')
-            .reduce((descriptionComment, word, i) => { return descriptionComment + ' ' + word + (i % MAX_CHAR_LENGTH === MAX_CHAR_LENGTH - 1 ? '\n*' : '') }, '/*') + '*/\n';
-    const comment = !jsonSchema.comments ? '' : `//${jsonSchema.comments}`;
+    const description = formatComment(jsonSchema.description);
     const options = jsonSchema.options ? jsonSchema.options.map(option => getOptionStatement(option, spacePrefix + ROW_PREFIX)) : [];
     const { reservedFieldNumbers, reservedFieldNames } = getReservedStatements(jsonSchema, spacePrefix + ROW_PREFIX);
     const fields = getFieldsStatement({
@@ -91,7 +87,7 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         externalDefinitions
     })).join('\n');
     return [description,
-        `${spacePrefix}message ${jsonSchema.title} { ${comment}`,
+        `${spacePrefix}message ${jsonSchema.title} {`,
         reservedFieldNumbers,
         reservedFieldNames,
         options,
@@ -152,12 +148,12 @@ const convertEntityTypeToValidName = (type) => {
 }
 
 const getImports = (externalDefinitions, imports = []) => {
-    const formattedImports = imports.map(({ packageName }) => `import '${packageName}';`)
+    const formattedImports = imports.map(({ packageName }) => `import "${packageName}";`)
     const importsFromDefinitions = externalDefinitions.map(definition => `import '${definition.link}';`)
-    return [...importsFromDefinitions, ...formattedImports, `import 'google/protobuf/any.proto';`]
+    return [...importsFromDefinitions, ...formattedImports, `import "google/protobuf/any.proto";`]
 }
 
-const getOptionStatement = (option, spacePrefix) => `${spacePrefix}option ${option.optionKey} = ${option.optionValue};`
+const getOptionStatement = (option, spacePrefix) => `${spacePrefix}option ${option.optionKey} = "${option.optionValue}";`
 
 const getReservedStatements = (data, spacePrefix) => {
     const _ = dependencies.lodash;
@@ -187,7 +183,7 @@ const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDef
         }
 
 
-        return `${spacePrefix}${getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })}${fieldType} ${fieldName} = ${field.fieldNumber}${getFieldOptionsStatement(fieldOptions)}; ${field.comments && field.comments !== '' ? ` //${field.comments}` : ''}`
+        return `${spacePrefix}${getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })}${fieldType} ${fieldName} = ${field.fieldNumber}${getFieldOptionsStatement(fieldOptions)}; ${field.description && field.description !== '' ? ` //${field.description}` : ''}`
     }).join('\n');
     return fields;
 }

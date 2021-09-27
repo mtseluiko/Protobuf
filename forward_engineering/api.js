@@ -5,6 +5,7 @@ const RECORD_NAME_STRATEGY = 'RecordNameStrategy';
 const TOPIC_RECORD_NAME_STRATEGY = 'TopicRecordNameStrategy';
 const protobufjs   = require("protobufjs")
 const descriptor = require("protobufjs/ext/descriptor");
+const { formatComment } = require('./helpers/utils');
 
 const defaultContainerData = [{
 	code: 'proto_file',
@@ -15,11 +16,12 @@ module.exports = {
 	generateContainerScript(data, logger, callback, app) {
 		setDependencies(app);
 		const _ = dependencies.lodash;
+		const containerData = !_.isEmpty(data.containerData) ? data.containerData : defaultContainerData
 		try {
 			const _ = dependencies.lodash;
 			let preparedData = {
 				...data,
-				containerData: !_.isEmpty(data.containerData) ? data.containerData : defaultContainerData
+				containerData
 			}
 			if (_.isEmpty(preparedData.collections)) {
 				callback(null, '');
@@ -40,7 +42,9 @@ module.exports = {
 				options: [],
 				messages: []
 			})
+			const description = formatComment(containerData[0].description );
 			const script = [
+				description,
 				syntax,
 				packageName,
 				..._.uniq(imports),
@@ -64,14 +68,18 @@ module.exports = {
 	},
 	generateScript(data, logger, callback, app) {
 		setDependencies(app);
+		const _ = dependencies.lodash;
+		const containerData = !_.isEmpty(data.containerData) ? data.containerData : defaultContainerData
 		try {
 			const _ = dependencies.lodash;
 			let preparedData = {
 				...data,
-				containerData: !_.isEmpty(data.containerData) ? data.containerData : defaultContainerData
+				containerData
 			}
+			const description = formatComment(containerData[0].description );
 			const processedMessage = generateCollectionScript(preparedData);
 			const script = [
+				description,
 				processedMessage.syntax,
 				processedMessage.packageName,
 				..._.uniq(processedMessage.imports),

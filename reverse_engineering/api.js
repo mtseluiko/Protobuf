@@ -37,7 +37,7 @@ module.exports = {
 				stack: e.stack,
 			};
 
-			logger.log('error', errorObject, 'Protobuf file Reverse-Engineering Error');
+			logger.log('error', errorObject, 'ProtoBuf file Reverse-Engineering Error');
 			callback(errorObject);
 		}
 	},
