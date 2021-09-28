@@ -8,7 +8,7 @@ const protoToCollectionsVisitor = require('./protobufToCollectionsVisitor');
 const ExprErrorListener = require('./antlrErrorListener');
 const { setDependencies, dependencies } = require('./appDependencies');
 const { parseDescriptor } = require('./services/descriptorToProtoStringService')
-const { convertParsedFileDataToCollections } = require('./services/converterService')
+const { convertParsedFileDataToCollections } = require('./services/converterService');
 
 module.exports = {
 	reFromFile: async (data, logger, callback, app) => {

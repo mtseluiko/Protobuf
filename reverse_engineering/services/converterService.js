@@ -1,4 +1,5 @@
 const { dependencies } = require('../appDependencies');
+const { getRootMessageName } = require('../helpers/rootMessageFinder');
 const { MAP_TYPE, ENUM_TYPE, ENUM_OPTION_TYPE,
     ENUM_FIELD_TYPE, ONE_OF_TYPE, MESSAGE_TYPE, RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE } = require('../helpers/parsingEntitiesTypes')
 
@@ -6,36 +7,45 @@ const NEW_DATABASE = 'New File'
 
 const convertParsedFileDataToCollections = parsedData => {
     const _ = dependencies.lodash;
+    const rootMessageName = getRootMessageName(parsedData.messages);
     const dbName = _.get(parsedData, 'packageName[0]', NEW_DATABASE);
+    const modelDefinitionsNames = [
+        ..._.get(parsedData, 'enums', []).map(parsedEnum => parsedEnum.name),
+        ..._.get(parsedData, 'messages', []).filter(parsedMessage => parsedMessage.name !== rootMessageName)
+            .map(parsedMessage => parsedMessage.name)
+    ]
     const enumDefinitions = _.get(parsedData, 'enums', []).map(parsedEnum => convertEnum(parsedEnum))
+    const messagesDefinitions = _.get(parsedData, 'messages', [])
+        .filter(message => message.name !== rootMessageName)
+        .map(parsedMessage => messageFieldConverter({ field: parsedMessage, modelDefinitionsNames }))
     const options = _.get(parsedData, 'options', [])
         .map(option => ({
             optionKey: option.name,
             optionValue: option.value
         }))
     const imports = _.get(parsedData, 'imports', []).map(importItem => ({ packageName: importItem.value }));
-    const messages = _.get(parsedData, 'messages', []).map(message => {
-        return {
-            objectNames: {
-                collectionName: message.name,
+    const modelDefinitions = [...enumDefinitions, ...messagesDefinitions];
+    const formattedModelDefinitions = modelDefinitions.reduce((definitions, def) => (
+        { ...definitions, [def.name]: _.omit(def, ['name']) }), {});
+    const rootMessage = _.get(parsedData, 'messages', []).find(message => message.name === rootMessageName);
+    return [{
+        objectNames: {
+            collectionName: rootMessage.name,
+        },
+        doc: {
+            modelDefinitions: { definitions: formattedModelDefinitions },
+            dbName,
+            collectionName: rootMessage.name,
+            bucketInfo: {
+                options,
+                package: dbName,
+                imports
             },
-            doc: {
-                modelDefinitions: { definitions: enumDefinitions },
-                dbName,
-                collectionName: message.name,
-                bucketInfo: {
-                    options,
-                    package: dbName,
-                    imports
-                },
-                entityLevel: {},
-                views: [],
-            },
-            jsonSchema: getJsonSchema(message, enumDefinitions)
-        }
-    })
-
-    return messages;
+            entityLevel: {},
+            views: [],
+        },
+        jsonSchema: getJsonSchema(rootMessage, modelDefinitions)
+    }]
 }
 
 const getJsonSchema = (message, modelDefinitions) => {
@@ -100,14 +110,9 @@ const generalFieldConverter = ({ field, internalDefinitionsNames = [], modelDefi
 
 const enumFieldConverter = ({ field }) => {
     const convertedEnum = convertEnum(field);
-    const allow_alias = convertedEnum.fieldOptions.some(option => option.optionKey === 'allow_alias');
     return {
-        name: field.name,
-        type: 'enum',
-        fieldNumber: field.fieldNumber,
-        fieldOptions: convertedEnum.fieldOptions,
-        listOfConstants: convertedEnum.listOfConstants,
-        allow_alias
+        ...convertedEnum,
+        type: 'enum'
     }
 }
 
@@ -162,14 +167,10 @@ const mapFieldConverter = ({ field }) => {
 
 const getType = ({ type, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     let unwrappedType = type;
-    if (internalDefinitionsNames.includes(type)) {
+    if (internalDefinitionsNames.includes(type) || modelDefinitionsNames.includes(type)) {
         return {
-            $ref: `#/definitions/${type}`
-        }
-    }
-    if (modelDefinitionsNames.includes(type)) {
-        return {
-            $ref: `#model/definitions/${type}`
+            $ref: `#/definitions/${type}`,
+            type: 'reference'
         }
     }
     if (type.startsWith('google.protobuf.')) {
@@ -241,6 +242,7 @@ const convertEnum = parsedEnum => {
     return {
         name: parsedEnum.name,
         fieldOptions,
+        fieldNumber: parsedEnum.fieldNumber,
         listOfConstants,
         type: ENUM_TYPE,
         allow_alias

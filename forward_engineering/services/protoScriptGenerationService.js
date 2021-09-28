@@ -22,7 +22,7 @@ const generateCollectionScript = data => {
     const jsonSchema = JSON.parse(data.jsonSchema)
 
     const internalDefinitions = parseDefinitions(getInternalDefinitions(data.internalDefinitions, jsonSchema.GUID));
-    const modelDefinitions = getRequiredModelDefinitions(data.modelDefinitions, jsonSchema.properties);
+    const modelDefinitions = parseDefinitions(data.modelDefinitions);
     const externalDefinitions = parseDefinitions(data.externalDefinitions);
     const modelDefinitionsStatements = modelDefinitions.map(definition => getDefinitionStatements({
         jsonSchema: definition,
@@ -269,20 +269,6 @@ const getFieldOptionsStatement = (options) => {
     }
 
     return ` [${options.map(option => `${option.optionKey} = ${option.optionValue}`).join(', ')}]`;
-}
-
-const getRequiredModelDefinitions = (modelDefinitions, messageProperties) => {
-    const definitions = parseDefinitions(modelDefinitions)
-    const modelDefinitionsReferences = Object.values(messageProperties)
-        .filter(property => !!property.$ref)
-        .filter(property => property.$ref.startsWith('#model'))
-    return modelDefinitionsReferences.reduce((requiredDefinitions, { GUID }) => {
-        const requiredDefinition = getReferencedDefinition(definitions, GUID);
-        if (requiredDefinition) {
-            return [...requiredDefinitions, requiredDefinition];
-        }
-        return requiredDefinitions
-    }, [])
 }
 
 const parseDefinitions = definitions => {
