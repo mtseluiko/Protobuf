@@ -83,6 +83,7 @@ const getJsonSchema = (message, modelDefinitions) => {
         definitions: internalDefinitions,
         reservedFieldNumbers: reservedFieldNumbers.join(', '),
         reservedFieldNames: reservedFieldNames.join(', '),
+        description: message.description
     }
 }
 
@@ -105,7 +106,8 @@ const generalFieldConverter = ({ field, internalDefinitionsNames = [], modelDefi
         ...getType({ type: field.type, internalDefinitionsNames, modelDefinitionsNames }),
         repetition: field.repetition,
         fieldOptions: field.options,
-        fieldNumber: field.fieldNumber
+        fieldNumber: field.fieldNumber,
+        description: field.description
     }
 }
 
@@ -165,7 +167,8 @@ const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], 
         properties,
         repetition: message.repetition,
         fieldNumber: message.fieldNumber,
-        fieldOptions: options
+        fieldOptions: options,
+        description: message.description
     }
 }
 

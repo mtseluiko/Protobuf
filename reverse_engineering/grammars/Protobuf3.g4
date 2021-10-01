@@ -8,6 +8,8 @@ proto
       | optionStatement
       | topLevelDef
       | emptyStatement
+      | COMMENT
+      | LINE_COMMENT
     )*
   ;
 
@@ -43,7 +45,7 @@ optionName
 // Normal Field
 
 field
-  : repetition=( REPEATED | OPTIONAL | REQUIRED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
+  : repetition=( REPEATED | OPTIONAL | REQUIRED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI LINE_COMMENT?
   ;
 
 fieldOptions
@@ -65,7 +67,7 @@ oneof
   ;
 
 oneofField
-  : type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI
+  : type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI  LINE_COMMENT?
   ;
 
 // Map field
@@ -135,6 +137,8 @@ topLevelDef
   : messageDef
   | enumDef
   | serviceDef
+  | COMMENT
+  | LINE_COMMENT
   ;
 
 // enum
@@ -168,7 +172,7 @@ enumValueOption
 // message
 
 messageDef
-  : MESSAGE messageName messageBody
+  : COMMENT? MESSAGE messageName messageBody
   ;
 
 messageBody
@@ -327,8 +331,9 @@ fragment HEX_DIGIT: [0-9A-Fa-f];
 
 // comments
 WS  :   [ \t\r\n\u000C]+ -> skip;
-LINE_COMMENT: '//' ~[\r\n]* -> skip;
-COMMENT: '/*' .*? '*/' -> skip;
+MESSAGE_COMMENT: '//' ~[\r\n]*;
+COMMENT: '/*' .*? '*/';
+LINE_COMMENT: '//' ~[\r\n]*;
 
 keywords
   : SYNTAX

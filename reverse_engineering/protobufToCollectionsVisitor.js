@@ -15,8 +15,8 @@ class Visitor extends Protobuf3Visitor {
 		const options = this.visit(ctx.optionStatement());
 		const imports = this.visit(ctx.importStatement());
 		const definitions = this.visit(ctx.topLevelDef());
-		const messages = definitions.filter(definition => definition.elementType === MESSAGE_TYPE);
-		const enums = definitions.filter(definition => definition.elementType === ENUM_TYPE);
+		const messages = definitions.filter(Boolean).filter(definition => definition.elementType === MESSAGE_TYPE);
+		const enums = definitions.filter(Boolean).filter(definition => definition.elementType === ENUM_TYPE);
 		return {
 			syntaxVersion,
 			packageName,
@@ -62,12 +62,14 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitMessageDef(ctx) {
+		const comment = getName(ctx?.COMMENT());
 		const name = getName(ctx.messageName());
 		const body = this.visit(ctx.messageBody());
 		return {
 			elementType: MESSAGE_TYPE,
 			name,
-			body
+			body,
+			description: comment.replace('/*', '').replace('*/', '').replaceAll('*', '')
 		};
 	}
 
@@ -87,6 +89,7 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitField(ctx) {
+		const comment = getName(ctx?.LINE_COMMENT())
 		const type = getName(ctx.type_());
 		const name = getName(ctx.fieldName());
 		const fieldNumber = getName(ctx.fieldNumber());
@@ -98,7 +101,8 @@ class Visitor extends Protobuf3Visitor {
 			name,
 			fieldNumber,
 			repetition,
-			options
+			options,
+			description: comment.replace('//', '')
 		};
 	}
 
@@ -184,6 +188,7 @@ class Visitor extends Protobuf3Visitor {
 
 	visitOneofField(ctx) {
 		const type = getName(ctx.type_());
+		const comment = getName(ctx?.LINE_COMMENT())
 		const name = getName(ctx.fieldName());
 		const fieldNumber = getName(ctx.fieldNumber());
 		const options = this.visitIfExists(ctx, 'fieldOptions', []);
@@ -192,7 +197,8 @@ class Visitor extends Protobuf3Visitor {
 			type,
 			name,
 			fieldNumber,
-			options
+			options,
+			description: comment.replace('//', '')
 		};
 	}
 
