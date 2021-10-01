@@ -119,6 +119,12 @@ making sure that you maintain a proper JSON format.
 		"lowerTab": "Details",
 		"structure": [
 			{
+				"propertyName": "File name",
+				"propertyKeyword": "name",
+				"propertyType": "text",
+				"regex": "^[a-z][A-Za-z0-9_]*$"
+			},
+			{
 				"propertyName": "Technical name",
 				"propertyKeyword": "code",
 				"propertyType": "text",
