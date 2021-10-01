@@ -5,10 +5,10 @@ const { MAP_TYPE, ENUM_TYPE, ENUM_OPTION_TYPE,
 
 const NEW_DATABASE = 'New File'
 
-const convertParsedFileDataToCollections = parsedData => {
+const convertParsedFileDataToCollections = (parsedData, dbName) => {
     const _ = dependencies.lodash;
     const rootMessageName = getRootMessageName(parsedData.messages);
-    const dbName = _.get(parsedData, 'packageName[0]', NEW_DATABASE);
+    const packageName = _.get(parsedData, 'packageName[0]', NEW_DATABASE);
     const modelDefinitionsNames = [
         ..._.get(parsedData, 'enums', []).map(parsedEnum => parsedEnum.name),
         ..._.get(parsedData, 'messages', []).filter(parsedMessage => parsedMessage.name !== rootMessageName)
@@ -37,8 +37,9 @@ const convertParsedFileDataToCollections = parsedData => {
             dbName,
             collectionName: rootMessage.name,
             bucketInfo: {
+                code: dbName,
                 options,
-                package: dbName,
+                package: packageName,
                 imports
             },
             entityLevel: {},
@@ -131,15 +132,28 @@ const oneOfFieldConverter = ({ field, internalDefinitionsNames = [], modelDefini
 }
 
 const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
+    const _ = dependencies.lodash;
     const entitiesDefinitionsTypes = message.body
-        .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
-        .reduce((entitiesMap, entity) => ({ ...entitiesMap, [entity.name]: entity }), {})
+        .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType));
+    const formattedEntitiesDefinitionTypes = entitiesDefinitionsTypes.reduce((entitiesMap, entity) => ({ ...entitiesMap, [entity.name]: entity }), {})
     const properties = message.body
         .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
-        .map(field => ({ ...field, ...(entitiesDefinitionsTypes[field.type] || {}) }))
-        .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)({ field, internalDefinitionsNames, modelDefinitionsNames }) }), {});
-    const options = message.body
-        .filter(field => field.elementType === OPTION_FIELD_TYPE)
+        .map(field => ({ ...field, ...(formattedEntitiesDefinitionTypes[field.type] || {}) }))
+        .reduce((fields, field) => {
+            const messageWithUpperLevelDefinitions = { ...field, body: [..._.get(field, 'body', []), ...entitiesDefinitionsTypes] }
+            return {
+                ...fields,
+                [field.name]: getConverter(field.elementType)({
+                    field: messageWithUpperLevelDefinitions,
+                    internalDefinitionsNames,
+                    modelDefinitionsNames
+                })
+            }
+        }, {});
+    const parsedMessageOptions = message.body
+        .filter(field => field.elementType === OPTION_FIELD_TYPE);
+    const messageOptions = _.isEmpty(parsedMessageOptions) ? _.get(message, 'options', []) : parsedMessageOptions;
+    const options = messageOptions
         .map(option => ({
             optionKey: option.name,
             optionValue: option.value
@@ -149,6 +163,7 @@ const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], 
         'childType': 'message',
         'type': 'document',
         properties,
+        repetition: message.repetition,
         fieldNumber: message.fieldNumber,
         fieldOptions: options
     }
@@ -228,11 +243,13 @@ const getMapKeyType = (type) => {
 }
 
 const convertEnum = parsedEnum => {
-    const fieldOptions = parsedEnum.body.filter(element => element.elementType === ENUM_OPTION_TYPE)
-        .map(option => ({
-            optionKey: option.name,
-            optionValue: option.value
-        }))
+    const _ = dependencies.lodash;
+    const parsedOptions = parsedEnum.body.filter(element => element.elementType === ENUM_OPTION_TYPE);
+    const enumOptions = _.isEmpty(parsedOptions) ? _.get(parsedEnum, 'options', []) : parsedOptions
+    const fieldOptions = enumOptions.map(option => ({
+        optionKey: option.name,
+        optionValue: option.value
+    }))
     const listOfConstants = parsedEnum.body.filter(element => element.elementType === ENUM_FIELD_TYPE)
         .map(constant => ({
             constant: constant.name,
@@ -244,6 +261,7 @@ const convertEnum = parsedEnum => {
         fieldOptions,
         fieldNumber: parsedEnum.fieldNumber,
         listOfConstants,
+        repetition: parsedEnum.repetition,
         type: ENUM_TYPE,
         allow_alias
     }

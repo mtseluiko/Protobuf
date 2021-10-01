@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs');
+const path = require('path');
 const antlr4 = require('antlr4');
 const Protobuf3Lexer = require('./parser/Protobuf3Lexer');
 const Protobuf3Parser = require('./parser/Protobuf3Parser');
@@ -14,6 +15,10 @@ module.exports = {
 	reFromFile: async (data, logger, callback, app) => {
 		try {
 			setDependencies(app);
+			const fileName = path.basename(data.filePath)
+				.replace('.proto','')
+				.replace('.confluent-proto','')
+				.replace('.pulsarSchemaRegistry-proto','');
 			const _ = dependencies.lodash;
 			let input = await handleFileData(data.filePath);
 			const isDescriptor = !_.isError(_.attempt(JSON.parse, input))
@@ -29,7 +34,7 @@ module.exports = {
 			parser.removeErrorListeners();
 			parser.addErrorListener(new ExprErrorListener());
 			const fileDefinitions = parser.proto().accept(new protoToCollectionsVisitor());
-			const result = convertParsedFileDataToCollections(fileDefinitions);
+			const result = convertParsedFileDataToCollections(fileDefinitions, fileName);
 			callback(null, result, { dbVersion: fileDefinitions.syntaxVersion }, [], 'multipleSchema');
 		} catch (e) {
 			const errorObject = {
