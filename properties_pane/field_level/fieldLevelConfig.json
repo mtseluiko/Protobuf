@@ -798,6 +798,7 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
+				"enableForReference": true,
 				"options": [
 					"",
 					"required",
@@ -816,6 +817,7 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
+				"enableForReference": true,
 				"options": [
 					"",
 					"singular",
@@ -845,17 +847,16 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Reserved field numbers",
 				"propertyKeyword": "reservedFieldNumbers",
 				"propertyTooltip": "Popup for multi-line text entry",
-				"propertyType": "details",
-				"markdown": false,
-				"template": "textarea"
+				"shouldValidate": true,
+				"propertyType": "text",
+				"regex": "^\\d+(?:(?:,\\s*\\d+)|(?:,\\s+\\d+\\s+to\\s+\\d+)|(?:,\\s+\\d+\\s+to\\s+max))*$"
 			},
 			{
 				"propertyName": "Reserved field names",
 				"propertyKeyword": "reservedFieldNames",
 				"propertyTooltip": "Popup for multi-line text entry",
-				"propertyType": "details",
-				"markdown": false,
-				"template": "textarea"
+				"shouldValidate": false,
+				"propertyType": "text"
 			},
 			{
 				"propertyName": "Options",
@@ -889,6 +890,7 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
+				"enableForReference": true,
 				"options": [
 					"",
 					"required",
@@ -907,6 +909,7 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
+				"enableForReference": true,
 				"options": [
 					"",
 					"singular",
@@ -958,17 +961,16 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Reserved field numbers",
 				"propertyKeyword": "reservedFieldNumbers",
 				"propertyTooltip": "Popup for multi-line text entry",
-				"propertyType": "details",
-				"markdown": false,
-				"template": "textarea"
+				"shouldValidate": true,
+				"propertyType": "text",
+				"regex": "^\\d+(?:(?:,\\s*\\d+)|(?:,\\s+\\d+\\s+to\\s+\\d+)|(?:,\\s+\\d+\\s+to\\s+max))*$"
 			},
 			{
 				"propertyName": "Reserved field names",
 				"propertyKeyword": "reservedFieldNames",
 				"propertyTooltip": "Popup for multi-line text entry",
-				"propertyType": "details",
-				"markdown": false,
-				"template": "textarea"
+				"shouldValidate": false,
+				"propertyType": "text"
 			},
 			"dependencies",
 			"sample",

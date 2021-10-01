@@ -3,13 +3,14 @@ const { generateCollectionScript } = require('./services/protoScriptGenerationSe
 const { setDependencies, dependencies } = require('../reverse_engineering/appDependencies');
 const RECORD_NAME_STRATEGY = 'RecordNameStrategy';
 const TOPIC_RECORD_NAME_STRATEGY = 'TopicRecordNameStrategy';
-const protobufjs   = require("protobufjs")
+const protobufjs = require("protobufjs")
 const descriptor = require("protobufjs/ext/descriptor");
 const { formatComment } = require('./helpers/utils');
 
 const defaultContainerData = [{
 	code: 'proto_file',
 	imports: [],
+	package: 'proto'
 }];
 
 module.exports = {
@@ -26,11 +27,10 @@ module.exports = {
 			if (_.isEmpty(preparedData.collections)) {
 				callback(null, '');
 			}
-			const { syntax, packageName, imports, modelDefinitionsStatements, options, messages } = preparedData.collections.reduce((processedMessages, message) => {
+			const { syntax, imports, modelDefinitionsStatements, options, messages } = preparedData.collections.reduce((processedMessages, message) => {
 				const processedMessage = generateCollectionScript({ ...preparedData, jsonSchema: message });
 				return {
 					syntax: processedMessage.syntax,
-					packageName: processedMessage.packageName,
 					imports: [...processedMessages.imports, ...processedMessage.imports],
 					modelDefinitionsStatements: [...processedMessages.modelDefinitionsStatements, ...processedMessage.modelDefinitionsStatements],
 					options: processedMessage.options,
@@ -42,15 +42,15 @@ module.exports = {
 				options: [],
 				messages: []
 			})
-			const description = formatComment(containerData[0].description );
+			const description = formatComment(containerData[0].description);
 			const script = [
 				description,
 				syntax,
-				packageName,
+				`package ${containerData[0].package}\n`,
 				..._.uniq(imports),
 				' ',
-				..._.uniq(modelDefinitionsStatements),
 				...options,
+				..._.uniq(modelDefinitionsStatements),
 				...messages
 			]
 				.filter(row => row !== '')
@@ -76,7 +76,7 @@ module.exports = {
 				...data,
 				containerData
 			}
-			const description = formatComment(containerData[0].description );
+			const description = formatComment(containerData[0].description);
 			const processedMessage = generateCollectionScript(preparedData);
 			const script = [
 				description,
@@ -84,8 +84,8 @@ module.exports = {
 				processedMessage.packageName,
 				..._.uniq(processedMessage.imports),
 				' ',
-				...processedMessage.modelDefinitionsStatements,
 				...processedMessage.options,
+				...processedMessage.modelDefinitionsStatements,
 				processedMessage.message
 			]
 				.filter(row => row !== '')
@@ -114,12 +114,12 @@ module.exports = {
 		return script;
 	},
 
-	getPulsarPostQuery({ data, schema }){
+	getPulsarPostQuery({ data, schema }) {
 		const _ = dependencies.lodash;
 		const root = protobufjs.parse(schema).root;
 		const descriptorMsg = root.toDescriptor("proto3");
 		const buffer = descriptor.FileDescriptorSet.encode(descriptorMsg).finish();
-		const fileDescriptorSet  = buffer.toString('base64')
+		const fileDescriptorSet = buffer.toString('base64')
 		const descriptorJson = descriptorMsg.toJSON();
 		const rootMessageTypeName = `${_.get(descriptorJson, 'file[0].package')}.${_.get(descriptorJson, 'file[0].messageType[0].name')}`;
 		const rootFileDescriptorName = _.get(descriptorJson, 'file[0].name')
@@ -134,8 +134,8 @@ module.exports = {
 			properties: {}
 		}
 		const namespace = _.get(data, 'containerData[0].name', '');
-		const topic =  _.get(data, 'containerData[0].pulsarTopicName', '');
-		const persistence =  _.get(data, 'containerData[0].isNonPersistentTopic', false) ? 'non-persistent' : 'persistent';
+		const topic = _.get(data, 'containerData[0].pulsarTopicName', '');
+		const persistence = _.get(data, 'containerData[0].isNonPersistentTopic', false) ? 'non-persistent' : 'persistent';
 		return `POST /${persistence}/${namespace}/${topic}/schema\n\n${JSON.stringify(bodyObject, null, 4)}`
 	},
 

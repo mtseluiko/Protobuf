@@ -49,8 +49,8 @@ const generateCollectionScript = data => {
         syntax: `syntax = "${protoVersion}";\n`,
         packageName,
         imports,
-        modelDefinitionsStatements,
         options,
+        modelDefinitionsStatements,
         message
     }
 }
@@ -90,7 +90,7 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         `${spacePrefix}message ${jsonSchema.title} {`,
         reservedFieldNumbers,
         reservedFieldNames,
-        options,
+        ...options,
         messageDefinitions,
         fields,
         `${spacePrefix}}`
@@ -102,13 +102,21 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
 
 const getEnumStatement = ({ jsonSchema, spacePrefix = '' }) => {
     const constants = jsonSchema.listOfConstants.map(item => `${ROW_PREFIX}${item.constant} = ${item.value};`)
-    const options = jsonSchema.options ? jsonSchema.options.map(option => getOptionStatement(option, ROW_PREFIX)) : [];
+    const options = getEnumOptions(jsonSchema.options);
     return [
         `${spacePrefix}enum ${jsonSchema.title} {`,
         ...options,
         ...constants,
         `}`,
     ].join(`\n${spacePrefix}`)
+}
+
+const getEnumOptions = options => {
+    if (!options) {
+        return [];
+    }
+    return options.filter(option => option.optionKey === 'allow_alias').map(option => getOptionStatement(option, ROW_PREFIX))
+
 }
 
 const extractDefinitionsFromProperties = properties => {
@@ -153,7 +161,13 @@ const getImports = (externalDefinitions, imports = []) => {
     return [...importsFromDefinitions, ...formattedImports, `import "google/protobuf/any.proto";`]
 }
 
-const getOptionStatement = (option, spacePrefix) => `${spacePrefix}option ${option.optionKey} = "${option.optionValue}";`
+const getOptionStatement = (option, spacePrefix) => {
+    const optionValue = option.optionValue;
+    if (optionValue === 'true' || optionValue === 'false') {
+        return `${spacePrefix}option ${option.optionKey} = ${optionValue};`
+    }
+    return `${spacePrefix}option ${option.optionKey} = "${optionValue}";`
+}
 
 const getReservedStatements = (data, spacePrefix) => {
     const _ = dependencies.lodash;
@@ -168,7 +182,7 @@ const getReservedStatements = (data, spacePrefix) => {
 const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
     const _ = dependencies.lodash;
 
-    const messageFields = jsonSchema.properties;
+    const messageFields = fixFieldNumbers(jsonSchema.properties, jsonSchema.reservedFieldNumbers);
     const fields = Object.keys(messageFields).map(fieldName => {
         const field = messageFields[fieldName];
         const hasFieldNumberError = !(field.fieldNumber && field.fieldNumber !== '' && !isNaN(field.fieldNumber));
@@ -188,6 +202,105 @@ const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDef
     return fields;
 }
 
+const fixFieldNumbers = (fields, reservedNumbers) => {
+    const _ = dependencies.lodash;
+    const fieldNumbers = Object.values(fields).map(field => field.fieldNumber);
+    let uniqueNumbers = _.uniq(fieldNumbers);
+    const fieldsNumber = _.size(fieldNumbers)
+
+    if (fieldsNumber === _.size(uniqueNumbers)) {
+        return fields
+    }
+
+    const checks = getChecksFromReservedNumbers(reservedNumbers)
+    const fieldsNumberSequence = generateSequence(fieldsNumber, uniqueNumbers, checks);
+    return Object.entries(fields).reduce((fixedFields, [key, value]) => {
+        if (uniqueNumbers.includes(value.fieldNumber)) {
+            uniqueNumbers = _.remove(uniqueNumbers, number => number !== value.fieldNumber)
+            return { ...fixedFields, [key]: value };
+        }
+        return { ...fixedFields, [key]: { ...value, fieldNumber: fieldsNumberSequence.shift() } };
+    }, {})
+}
+
+const getChecksFromReservedNumbers = reservedNumbers => {
+    if(!reservedNumbers){
+        return [];
+    }
+
+    if (!reservedNumbers.match(/^\d+(?:(?:,\s*\d+)|(?:,\s+\d+\s+to\s+\d+)|(?:,\s+\d+\s+to\s+max))*$/gm)) {
+        return [];
+    }
+
+    return reservedNumbers.split(',')
+    .map(number => number.replaceAll(' ', ''))
+    .reduce((checks, check) => {
+        if(check.match(/^\d+$/gm)){
+            const newCheck ={
+                type: 'value',
+                value: parseInt(check)
+            }
+            return [...checks, newCheck];
+        }
+        if(check.match(/^\d+to\d+$/gm)){
+            const [from, to] = check.split('to');
+            if(parseInt(from) > parseInt(to)){
+                return checks;
+            }
+            const newCheck ={
+                type: 'range',
+                from: parseInt(from),
+                to:parseInt(to)
+            }
+            return [...checks, newCheck];
+        }
+        if(check.match(/\d+tomax/gm)){
+            const [lessThen] = check.split('toMax');
+            const newCheck ={
+                type: 'less',
+                value: parseInt(lessThen)
+            }
+            return [...checks, newCheck];
+        }
+        return checks
+    }, [])
+}
+
+const generateSequence = (fieldsNumber, uniqueNumbers, checks) => {
+    const _ = dependencies.lodash;
+
+    const fieldsNumberPositionRange = _.range(1, fieldsNumber + 1);
+
+    return fieldsNumberPositionRange
+        .slice(0, -_.size(uniqueNumbers))
+        .reduce((usedNumbers, position) => [...usedNumbers, getNextFieldNumber(position, usedNumbers, uniqueNumbers, checks)], []);
+}
+
+const getNextFieldNumber = (position, usedNumbers, uniqueNumbers, checks) => {
+    const _ = dependencies.lodash;
+
+    const candidates = _.range(position, position + 1000);
+    const nextNumber = candidates.find(candidate => !usedNumbers.includes(candidate) && !uniqueNumbers.includes(candidate) && notReservedField(candidate, checks));
+    if (nextNumber) {
+        return nextNumber;
+    }
+    return 1;
+}
+
+const notReservedField = (candidate, checks) => {
+    return checks.reduce((valid, check) => {
+        if(check.type === 'value'){
+            return valid && (candidate !== check.value);
+        }
+        if(check.type === 'range'){
+            return valid && (candidate < check.from || candidate > check.to);
+        }
+        if(check.type === 'less'){
+            return valid && (candidate < check.value);
+        }
+    }, true)
+}
+
 const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, modelDefinitions, externalDefinitions }) => {
 
     const getUDT = (udt) => {
@@ -204,12 +317,12 @@ const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, 
             fieldType = `map<string,${value}>`
         }
         if (fieldType === 'any') {
-            if(field.typeUrl){
+            if (field.typeUrl) {
                 fieldType = field.typeUrl
-            }else{
+            } else {
                 fieldType = 'google.protobuf.Any'
             }
-            
+
         }
         return {
             fieldType,
@@ -245,7 +358,7 @@ const getDefinitionInfo = (definitions, fieldOptions, referenceId) => {
 const getReferencedDefinition = (definitions, referenceId) => {
     const _ = dependencies.lodash;
     return definitions.find(definition =>
-        _.get(definition,'definitionRefs',[]).some(ref => _.last(ref) === referenceId))
+        _.get(definition, 'definitionRefs', []).some(ref => _.last(ref) === referenceId))
 }
 
 const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {
@@ -268,7 +381,10 @@ const getFieldOptionsStatement = (options) => {
         return '';
     }
 
-    return ` [${options.map(option => `${option.optionKey} = ${option.optionValue}`).join(', ')}]`;
+    const stringifiedOptions = options.filter(option => option.optionKey !== 'allow_alias')
+        .map(option => `${option.optionKey} = ${option.optionValue}`)
+
+    return ` [${stringifiedOptions.join(', ')}]`;
 }
 
 const parseDefinitions = definitions => {
