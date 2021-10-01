@@ -24,7 +24,7 @@
 	"level": {
 		"entity": true,
 		"container": {
-		  "file": false,
+		  "file": true,
 		  "options": [
 			{
 			  "name": "Confluent API Schema",
