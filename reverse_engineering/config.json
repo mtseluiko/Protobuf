@@ -1,5 +1,5 @@
 {
-  "menu_label": "ProtoBuf file",
+  "menu_label": "Protobuf file",
   "name": "proto",
   "extensions": [ "proto", "confluent-proto", "pulsarSchemaRegistry-proto"],
   "useMultipleFileReverse": false,
