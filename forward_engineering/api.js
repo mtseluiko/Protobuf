@@ -46,7 +46,7 @@ module.exports = {
 			const script = [
 				description,
 				syntax,
-				`package ${containerData[0].package}\n`,
+				`package ${containerData[0].package || 'proto'};\n`,
 				..._.uniq(imports),
 				' ',
 				...options,

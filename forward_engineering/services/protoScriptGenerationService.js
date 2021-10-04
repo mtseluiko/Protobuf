@@ -1,4 +1,6 @@
 const { dependencies } = require('../../reverse_engineering/appDependencies');
+const { parseDefinitions, getDefinitionInfo, extractDefinitionsFromProperties } = require('../helpers/DefinitionsHelper');
+const { fixFieldNumbers } = require('../helpers/FieldNumberGenerationHelper');
 const { formatComment } = require('../helpers/utils');
 
 const PROTO_2_FIELD_RULES = ['required', 'optional', 'repeated'];
@@ -70,7 +72,7 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
     const description = formatComment(jsonSchema.description);
     const options = jsonSchema.options ? jsonSchema.options.map(option => getOptionStatement(option, spacePrefix + ROW_PREFIX)) : [];
     const { reservedFieldNumbers, reservedFieldNames } = getReservedStatements(jsonSchema, spacePrefix + ROW_PREFIX);
-    const fields = getFieldsStatement({
+    const { messageFields, oneOfFields } = getFieldsStatement({
         jsonSchema: { ...jsonSchema, properties },
         protoVersion,
         internalDefinitions: [...internalDefinitions, ...extractedDefinitions],
@@ -78,6 +80,10 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         externalDefinitions,
         spacePrefix: spacePrefix + ROW_PREFIX
     });
+
+    const oneOfStatement = getOneOfStatement(jsonSchema?.oneOf_meta?.name, oneOfFields, spacePrefix + ROW_PREFIX);
+
+
     const messageDefinitions = [...internalDefinitions, ...extractedDefinitions].map(definition => getDefinitionStatements({
         jsonSchema: definition,
         spacePrefix: spacePrefix + ROW_PREFIX,
@@ -92,13 +98,24 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         reservedFieldNames,
         ...options,
         messageDefinitions,
-        fields,
+        messageFields,
+        oneOfStatement,
         `${spacePrefix}}`
     ]
         .filter(row => row !== '')
         .join('\n');
 }
 
+const getOneOfStatement = (oneOfName, fields, spacePrefix = '') => {
+    const _ = dependencies.lodash;
+    if (_.isEmpty(fields)) {
+        return '';
+    }
+    return [`${spacePrefix}oneof ${oneOfName} {`,
+        ...fields,
+        '}'
+    ].join(`\n${spacePrefix}`);
+}
 
 const getEnumStatement = ({ jsonSchema, spacePrefix = '' }) => {
     const constants = jsonSchema.listOfConstants.map(item => `${ROW_PREFIX}${item.constant} = ${item.value};`)
@@ -117,42 +134,6 @@ const getEnumOptions = options => {
     }
     return options.filter(option => option.optionKey === 'allow_alias').map(option => getOptionStatement(option, ROW_PREFIX))
 
-}
-
-const extractDefinitionsFromProperties = properties => {
-    const { extractedDefinitions, modifiedProperties } = Object.entries(properties)
-        .reduce(({ extractedDefinitions, modifiedProperties }, [key, value]) => {
-            if (value.type !== 'message' && value.type !== 'enum') {
-                return {
-                    modifiedProperties: { ...modifiedProperties, [key]: value },
-                    extractedDefinitions
-                }
-            }
-            const definition = {
-                ...value,
-                title: key,
-                definitionRefs: [[value.GUID]],
-                options: value.fieldOptions
-            }
-            const property = {
-                ...value,
-                $ref: `#/definitions/${key}`,
-                title: convertEntityTypeToValidName(key)
-            }
-            return {
-                modifiedProperties: { ...modifiedProperties, [convertEntityTypeToValidName(key)]: property },
-                extractedDefinitions: [...extractedDefinitions, definition]
-            }
-
-        }, { modifiedProperties: {}, extractedDefinitions: [] });
-    return {
-        extractedDefinitions,
-        properties: modifiedProperties
-    }
-}
-const convertEntityTypeToValidName = (type) => {
-    const _ = dependencies.lodash;
-    return _.lowerCase(type).split(' ').join('_');
 }
 
 const getImports = (externalDefinitions, imports = []) => {
@@ -181,10 +162,39 @@ const getReservedStatements = (data, spacePrefix) => {
 
 const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
     const _ = dependencies.lodash;
+    const oneOfFields = Object.entries((jsonSchema?.oneOf_meta?.isActivated ? jsonSchema.oneOf : [])
+        .filter(property => property.isActivated)
+        .reduce((properties, property) => ({ ...properties, ...property.properties }), {}))
+        .filter(([key, value]) => value.isActivated)
+        .reduce((oneOfProperties, [key, value]) => ({ ...oneOfProperties, [key]: { ...value, parent: 'oneOf' } }), {})
+    const fixedFields = fixFieldNumbers({ ...jsonSchema.properties, ...oneOfFields }, jsonSchema.reservedFieldNumbers);
+    const messageFieldsStatements = convertFieldsToStatements(
+        {
+            fields: Object.entries(fixedFields)
+                .filter(([key, field]) => !field.parent)
+                .reduce((fields, [key, field]) => ({ ...fields, [key]: field }), {}),
+            spacePrefix,
+            protoVersion,
+            internalDefinitions,
+            modelDefinitions,
+            externalDefinitions
+        }).join('\n');
 
-    const messageFields = fixFieldNumbers(jsonSchema.properties, jsonSchema.reservedFieldNumbers);
-    const fields = Object.keys(messageFields).map(fieldName => {
-        const field = messageFields[fieldName];
+    const oneOfFieldsStatements = convertFieldsToStatements({
+        fields: Object.entries(fixedFields)
+            .filter(([key, field]) => field.parent === 'oneOf')
+            .reduce((fields, [key, field]) => ({ ...fields, [key]: field }), {}),
+            spacePrefix,
+            protoVersion,
+            internalDefinitions,
+            modelDefinitions,
+            externalDefinitions
+    });
+    return { messageFields: messageFieldsStatements, oneOfFields: oneOfFieldsStatements };
+}
+const convertFieldsToStatements = ({ fields, spacePrefix, protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
+    return Object.keys(fields).map(fieldName => {
+        const field = fields[fieldName];
         const hasFieldNumberError = !(field.fieldNumber && field.fieldNumber !== '' && !isNaN(field.fieldNumber));
         const isReference = !!field.$ref;
         const isExternalRef = isReference ? field.$ref.startsWith('file://') : false;
@@ -196,109 +206,8 @@ const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDef
             return `${spacePrefix}/*${getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })}${fieldType} ${fieldName} = ${field.fieldNumber};\tERROR: the field contains an incorrect reference to not existed definition*/`
         }
 
-
         return `${spacePrefix}${getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })}${fieldType} ${fieldName} = ${field.fieldNumber}${getFieldOptionsStatement(fieldOptions)}; ${field.description && field.description !== '' ? ` //${field.description}` : ''}`
-    }).join('\n');
-    return fields;
-}
-
-const fixFieldNumbers = (fields, reservedNumbers) => {
-    const _ = dependencies.lodash;
-    const fieldNumbers = Object.values(fields).map(field => field.fieldNumber);
-    let uniqueNumbers = _.uniq(fieldNumbers);
-    const fieldsNumber = _.size(fieldNumbers)
-
-    if (fieldsNumber === _.size(uniqueNumbers)) {
-        return fields
-    }
-
-    const checks = getChecksFromReservedNumbers(reservedNumbers)
-    const fieldsNumberSequence = generateSequence(fieldsNumber, uniqueNumbers, checks);
-    return Object.entries(fields).reduce((fixedFields, [key, value]) => {
-        if (uniqueNumbers.includes(value.fieldNumber)) {
-            uniqueNumbers = _.remove(uniqueNumbers, number => number !== value.fieldNumber)
-            return { ...fixedFields, [key]: value };
-        }
-        return { ...fixedFields, [key]: { ...value, fieldNumber: fieldsNumberSequence.shift() } };
-    }, {})
-}
-
-const getChecksFromReservedNumbers = reservedNumbers => {
-    if(!reservedNumbers){
-        return [];
-    }
-
-    if (!reservedNumbers.match(/^\d+(?:(?:,\s*\d+)|(?:,\s+\d+\s+to\s+\d+)|(?:,\s+\d+\s+to\s+max))*$/gm)) {
-        return [];
-    }
-
-    return reservedNumbers.split(',')
-    .map(number => number.replaceAll(' ', ''))
-    .reduce((checks, check) => {
-        if(check.match(/^\d+$/gm)){
-            const newCheck ={
-                type: 'value',
-                value: parseInt(check)
-            }
-            return [...checks, newCheck];
-        }
-        if(check.match(/^\d+to\d+$/gm)){
-            const [from, to] = check.split('to');
-            if(parseInt(from) > parseInt(to)){
-                return checks;
-            }
-            const newCheck ={
-                type: 'range',
-                from: parseInt(from),
-                to:parseInt(to)
-            }
-            return [...checks, newCheck];
-        }
-        if(check.match(/\d+tomax/gm)){
-            const [lessThen] = check.split('toMax');
-            const newCheck ={
-                type: 'less',
-                value: parseInt(lessThen)
-            }
-            return [...checks, newCheck];
-        }
-        return checks
-    }, [])
-}
-
-const generateSequence = (fieldsNumber, uniqueNumbers, checks) => {
-    const _ = dependencies.lodash;
-
-    const fieldsNumberPositionRange = _.range(1, fieldsNumber + 1);
-
-    return fieldsNumberPositionRange
-        .slice(0, -_.size(uniqueNumbers))
-        .reduce((usedNumbers, position) => [...usedNumbers, getNextFieldNumber(position, usedNumbers, uniqueNumbers, checks)], []);
-}
-
-const getNextFieldNumber = (position, usedNumbers, uniqueNumbers, checks) => {
-    const _ = dependencies.lodash;
-
-    const candidates = _.range(position, position + 1000);
-    const nextNumber = candidates.find(candidate => !usedNumbers.includes(candidate) && !uniqueNumbers.includes(candidate) && notReservedField(candidate, checks));
-    if (nextNumber) {
-        return nextNumber;
-    }
-    return 1;
-}
-
-const notReservedField = (candidate, checks) => {
-    return checks.reduce((valid, check) => {
-        if(check.type === 'value'){
-            return valid && (candidate !== check.value);
-        }
-        if(check.type === 'range'){
-            return valid && (candidate < check.from || candidate > check.to);
-        }
-        if(check.type === 'less'){
-            return valid && (candidate < check.value);
-        }
-    }, true)
+    });
 }
 
 const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, modelDefinitions, externalDefinitions }) => {
@@ -338,29 +247,6 @@ const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, 
     return getDefinitionInfo(internalDefinitions, field.fieldOptions, field.GUID)
 }
 
-
-const getDefinitionInfo = (definitions, fieldOptions, referenceId) => {
-    const _ = dependencies.lodash;
-    const requiredDefinition = getReferencedDefinition(definitions, referenceId);
-
-    if (requiredDefinition) {
-        return {
-            fieldType: requiredDefinition.title,
-            fieldOptions
-        }
-    }
-    return {
-        hasReferenceError: true,
-        fieldOptions: ''
-    }
-}
-
-const getReferencedDefinition = (definitions, referenceId) => {
-    const _ = dependencies.lodash;
-    return definitions.find(definition =>
-        _.get(definition, 'definitionRefs', []).some(ref => _.last(ref) === referenceId))
-}
-
 const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {
     const fieldRules = protoVersion === 'proto2' ? PROTO_2_FIELD_RULES : PROTO_3_FIELD_RULES;
     if (fieldRule === 'singular') {
@@ -386,20 +272,6 @@ const getFieldOptionsStatement = (options) => {
 
     return ` [${stringifiedOptions.join(', ')}]`;
 }
-
-const parseDefinitions = definitions => {
-    const _ = dependencies.lodash;
-    return Object.entries(
-        _.get(JSON.parse(definitions), 'properties', {})
-    ).map(([key, value]) => ({ title: key, ...value }))
-        .filter(definition => {
-            const isMessage = definition.type === 'message';
-            const isEnum = definition.type === 'enum';
-            return isMessage || isEnum;
-        });
-}
-
-
 
 module.exports = {
     generateCollectionScript
