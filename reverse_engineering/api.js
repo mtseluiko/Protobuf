@@ -18,7 +18,8 @@ module.exports = {
 			const fileName = path.basename(data.filePath)
 				.replace('.proto','')
 				.replace('.confluent-proto','')
-				.replace('.pulsarSchemaRegistry-proto','');
+				.replace('.pulsarSchemaRegistry-proto','')
+				.replace('-','_');
 			const _ = dependencies.lodash;
 			let input = await handleFileData(data.filePath);
 			const isDescriptor = !_.isError(_.attempt(JSON.parse, input))
