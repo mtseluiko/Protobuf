@@ -10,7 +10,7 @@
     "contributes": {
         "target": {
             "applicationTarget": "protobuf",
-            "title": "protobuf",
+            "title": "Protobuf",
             "versions": [
                 "2",
                 "3"
