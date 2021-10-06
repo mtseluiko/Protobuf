@@ -69,7 +69,7 @@ const getJsonSchema = (message, modelDefinitions) => {
         .filter(field => field.elementType === RESERVED_FIELD_TYPE)
         .reduce((reservedValues, reservedString) => {
             const formattedString = reservedString.values.join(', ');
-            if (formattedString.match(/[\d+, (?:to)(?:max)]+/gm)) {
+            if (formattedString.match(/^\d+(?:(?:,\s*\d+)|(?:,\s+\d+\s+to\s+\d+)|(?:,\s+\d+\s+to\s+max))*$/gm)) {
                 return { ...reservedValues, reservedFieldNumbers: [...reservedValues.reservedFieldNumbers, formattedString] }
             } else {
                 return { ...reservedValues, reservedFieldNames: [...reservedValues.reservedFieldNames, reservedString.values.map(str => `'${str}'`).join(', ')] }
@@ -177,6 +177,7 @@ const mapFieldConverter = ({ field }) => {
     return {
         type: 'map',
         subtype,
+        keyType: field.keyType,
         udt_value_type: subtype === 'map<udt>' ? field.type : '',
         fieldOptions: field.options
     }

@@ -1003,6 +1003,25 @@ making sure that you maintain a proper JSON format.
 			"schemaId",
 			"type",
 			{
+				"propertyName": "Key type",
+				"propertyKeyword": "keyType",
+				"propertyType": "select",
+				"defaultValue": "map<string>",
+				"options": [
+					"string",
+					"int32",
+					"int64",
+					"sint32",
+					"sint64",
+					"uint32",
+					"uint64",
+					"fixed32",
+					"fixed64",
+					"sfixed32",
+					"sfixed64"
+				]
+			},
+			{
 				"propertyName": "Value type",
 				"propertyKeyword": "subtype",
 				"typeDecorator": {

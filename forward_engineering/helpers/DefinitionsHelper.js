@@ -34,7 +34,7 @@ const getReferencedDefinition = (definitions, referenceId) => {
         _.get(definition, 'definitionRefs', []).some(ref => _.last(ref) === referenceId))
 }
 
-const extractDefinitionsFromProperties = properties => {
+const extractDefinitionsFromProperties = (properties = []) => {
     const { extractedDefinitions, modifiedProperties } = Object.entries(properties)
         .reduce(({ extractedDefinitions, modifiedProperties }, [key, value]) => {
             if (value.type !== 'message' && value.type !== 'enum') {

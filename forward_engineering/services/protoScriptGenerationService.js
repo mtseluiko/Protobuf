@@ -221,9 +221,9 @@ const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, 
     }
     if (!isReference) {
         let fieldType = field.subtype || field.type;
-        if (fieldType === 'map') {
+        if (field.type === 'map') {
             const value = field.subtype !== `map<udt>` ? field.subtype.slice(4, -1) : getUDT(field.udt_value_type)
-            fieldType = `map<string,${value}>`
+            fieldType = `map<${field.keyType},${value}>`
         }
         if (fieldType === 'any') {
             if (field.typeUrl) {
