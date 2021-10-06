@@ -331,7 +331,6 @@ fragment HEX_DIGIT: [0-9A-Fa-f];
 
 // comments
 WS  :   [ \t\r\n\u000C]+ -> skip;
-MESSAGE_COMMENT: '//' ~[\r\n]*;
 COMMENT: '/*' .*? '*/';
 LINE_COMMENT: '//' ~[\r\n]*;
 
