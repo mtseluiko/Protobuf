@@ -1,7 +1,7 @@
 grammar Protobuf3;
 
 proto
-  : syntax
+  : (LINE_COMMENT | COMMENT)* syntax
     (
         importStatement
       | packageStatement
