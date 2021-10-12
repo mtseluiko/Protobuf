@@ -1,11 +1,14 @@
 const { dependencies } = require('../appDependencies');
 const { getRootMessageName } = require('../helpers/rootMessageFinder');
+const { fixFileName, determineSchemaType } = require('../helpers/fileNameHelper')
 const { MAP_TYPE, ENUM_TYPE, ENUM_OPTION_TYPE,
     ENUM_FIELD_TYPE, ONE_OF_TYPE, MESSAGE_TYPE, RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE } = require('../helpers/parsingEntitiesTypes')
 
 const NEW_DATABASE = 'New File'
 
-const convertParsedFileDataToCollections = (parsedData, dbName) => {
+const convertParsedFileDataToCollections = (parsedData, fileName) => {
+    const dbName = fixFileName(fileName);
+    const schemaType = determineSchemaType(fileName);
     const _ = dependencies.lodash;
     const rootMessageName = getRootMessageName(parsedData.messages);
     const packageName = _.get(parsedData, 'packageName[0]', NEW_DATABASE);
@@ -40,7 +43,8 @@ const convertParsedFileDataToCollections = (parsedData, dbName) => {
                 code: dbName,
                 options,
                 package: packageName,
-                imports
+                imports,
+                schemaType
             },
             entityLevel: {},
             views: [],

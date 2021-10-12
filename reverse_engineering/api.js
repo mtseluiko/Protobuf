@@ -11,15 +11,11 @@ const { setDependencies, dependencies } = require('./appDependencies');
 const { parseDescriptor } = require('./services/descriptorToProtoStringService')
 const { convertParsedFileDataToCollections } = require('./services/converterService');
 
+
 module.exports = {
 	reFromFile: async (data, logger, callback, app) => {
 		try {
 			setDependencies(app);
-			const fileName = path.basename(data.filePath)
-				.replace('.proto','')
-				.replace('.confluent-proto','')
-				.replace('.pulsarSchemaRegistry-proto','')
-				.replace('-','_');
 			const _ = dependencies.lodash;
 			let input = await handleFileData(data.filePath);
 			const isDescriptor = !_.isError(_.attempt(JSON.parse, input))
@@ -35,7 +31,7 @@ module.exports = {
 			parser.removeErrorListeners();
 			parser.addErrorListener(new ExprErrorListener());
 			const fileDefinitions = parser.proto().accept(new protoToCollectionsVisitor());
-			const result = convertParsedFileDataToCollections(fileDefinitions, fileName);
+			const result = convertParsedFileDataToCollections(fileDefinitions, path.basename(data.filePath));
 			callback(null, result, { dbVersion: fileDefinitions.syntaxVersion }, [], 'multipleSchema');
 		} catch (e) {
 			const errorObject = {
