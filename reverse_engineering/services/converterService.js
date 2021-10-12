@@ -56,20 +56,24 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
 const getJsonSchema = (message, modelDefinitions) => {
 
     const internalDefinitions = message.body
+        .filter(field => field)
         .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
         .map(field => getConverter(field.elementType)({ field }));
     const internalDefinitionsNames = internalDefinitions.map(definition => definition.name);
     const modelDefinitionsNames = modelDefinitions.map(definition => definition.name);
     const properties = message.body
+        .filter(field => field)
         .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
         .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)({ field, internalDefinitionsNames, modelDefinitionsNames }) }), {});
     const options = message.body
+        .filter(field => field)
         .filter(field => field.elementType === OPTION_FIELD_TYPE)
         .map(option => ({
             optionKey: option.name,
             optionValue: option.value
         }))
     const { reservedFieldNumbers, reservedFieldNames } = message.body
+        .filter(field => field)
         .filter(field => field.elementType === RESERVED_FIELD_TYPE)
         .reduce((reservedValues, reservedString) => {
             const formattedString = reservedString.values.join(', ');
@@ -140,9 +144,11 @@ const oneOfFieldConverter = ({ field, internalDefinitionsNames = [], modelDefini
 const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     const _ = dependencies.lodash;
     const entitiesDefinitionsTypes = message.body
+        .filter(field => field)
         .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType));
     const formattedEntitiesDefinitionTypes = entitiesDefinitionsTypes.reduce((entitiesMap, entity) => ({ ...entitiesMap, [entity.name]: entity }), {})
     const properties = message.body
+        .filter(field => field)
         .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
         .map(field => ({ ...field, ...(formattedEntitiesDefinitionTypes[field.type] || {}) }))
         .reduce((fields, field) => {
@@ -157,6 +163,7 @@ const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], 
             }
         }, {});
     const parsedMessageOptions = message.body
+        .filter(field => field)
         .filter(field => field.elementType === OPTION_FIELD_TYPE);
     const messageOptions = _.isEmpty(parsedMessageOptions) ? _.get(message, 'options', []) : parsedMessageOptions;
     const options = messageOptions
@@ -252,13 +259,17 @@ const getMapKeyType = (type) => {
 
 const convertEnum = parsedEnum => {
     const _ = dependencies.lodash;
-    const parsedOptions = parsedEnum.body.filter(element => element.elementType === ENUM_OPTION_TYPE);
+    const parsedOptions = parsedEnum.body
+        .filter(element => element)
+        .filter(element => element.elementType === ENUM_OPTION_TYPE);
     const enumOptions = _.isEmpty(parsedOptions) ? _.get(parsedEnum, 'options', []) : parsedOptions
     const fieldOptions = enumOptions.map(option => ({
         optionKey: option.name,
         optionValue: option.value
     }))
-    const listOfConstants = parsedEnum.body.filter(element => element.elementType === ENUM_FIELD_TYPE)
+    const listOfConstants = parsedEnum.body
+        .filter(element => element)
+        .filter(element => element.elementType === ENUM_FIELD_TYPE)
         .map(constant => ({
             constant: constant.name,
             value: constant.value

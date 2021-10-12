@@ -72,6 +72,12 @@ Protobuf3Visitor.prototype.visitFieldNumber = function(ctx) {
 };
 
 
+// Visit a parse tree produced by Protobuf3Parser#extensions.
+Protobuf3Visitor.prototype.visitExtensions = function(ctx) {
+  return this.visitChildren(ctx);
+};
+
+
 // Visit a parse tree produced by Protobuf3Parser#oneof.
 Protobuf3Visitor.prototype.visitOneof = function(ctx) {
   return this.visitChildren(ctx);

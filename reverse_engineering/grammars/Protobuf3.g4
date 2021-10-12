@@ -60,6 +60,12 @@ fieldNumber
   : intLit
   ;
 
+// Extensions
+
+extensions
+  : EXTENSIONS range_ SEMI
+  ;
+
 // Oneof and oneof field
 
 oneof
@@ -155,6 +161,8 @@ enumElement
   : optionStatement
   | enumField
   | emptyStatement
+  | COMMENT
+  | LINE_COMMENT
   ;
 
 enumField
@@ -188,6 +196,9 @@ messageElement
   | mapField
   | reserved
   | emptyStatement
+  | extensions
+  | COMMENT
+  | LINE_COMMENT
   ;
 
 // service
@@ -200,6 +211,8 @@ serviceElement
   : optionStatement
   | rpc
   | emptyStatement
+  | COMMENT
+  | LINE_COMMENT
   ;
 
 rpc
@@ -255,6 +268,7 @@ OPTION: 'option';
 OPTIONAL: 'optional';
 REQUIRED: 'required';
 REPEATED: 'repeated';
+EXTENSIONS: 'extensions';
 ONEOF: 'oneof';
 MAP: 'map';
 INT32: 'int32';
@@ -344,6 +358,7 @@ keywords
   | OPTIONAL
   | REQUIRED
   | REPEATED
+  | EXTENSIONS
   | ONEOF
   | MAP
   | INT32

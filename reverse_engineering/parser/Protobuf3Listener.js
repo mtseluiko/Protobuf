@@ -101,6 +101,15 @@ Protobuf3Listener.prototype.exitFieldNumber = function(ctx) {
 };
 
 
+// Enter a parse tree produced by Protobuf3Parser#extensions.
+Protobuf3Listener.prototype.enterExtensions = function(ctx) {
+};
+
+// Exit a parse tree produced by Protobuf3Parser#extensions.
+Protobuf3Listener.prototype.exitExtensions = function(ctx) {
+};
+
+
 // Enter a parse tree produced by Protobuf3Parser#oneof.
 Protobuf3Listener.prototype.enterOneof = function(ctx) {
 };

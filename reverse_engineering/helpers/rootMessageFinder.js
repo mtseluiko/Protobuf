@@ -20,12 +20,14 @@ const getRootMessageName = (messages) => {
 
 const getTopLevelTypes = (message, topLevelMessages) => {
     const _ = dependencies.lodash;
-    const fieldProperties = message.body.filter(property => property.elementType === 'field');
+    const fieldProperties = message.body.filter(property => property)
+        .filter(property => property.elementType === 'field');
     const fieldsTopLevelTypes = fieldProperties
         .filter(property => topLevelMessages.includes(property.type))
         .map(property => property.type);
 
-    const messageProperties = message.body.filter(property => property.elementType === 'message');
+    const messageProperties = message.body.filter(property => property)
+        .filter(property => property.elementType === 'message');
     const messagesTopLevelTypes = messageProperties.reduce((topLevelTypes, message) => {
         return [...topLevelTypes,...getTopLevelTypes(message, topLevelMessages)];
     }, [])
