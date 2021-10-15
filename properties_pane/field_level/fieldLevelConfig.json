@@ -158,13 +158,6 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
-			},
 			"default",
 			"enum",
 			"dependencies",
@@ -235,13 +228,6 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
-			},
 			"default",
 			"enum",
 			"dependencies",
@@ -311,13 +297,6 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
-			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
 			},
 			{
 				"propertyName": "Default type URL",
@@ -404,13 +383,6 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
-			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -502,13 +474,6 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
-			},
 			"minimum",
 			"exclusiveMinimum",
 			"maximum",
@@ -585,13 +550,6 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
-			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
 			},
 			"minimum",
 			"exclusiveMinimum",
@@ -670,13 +628,6 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
-			},
 			"minimum",
 			"exclusiveMinimum",
 			"maximum",
@@ -754,13 +705,6 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
-			},
 			"default",
 			"dependencies",
 			"sample",
@@ -831,26 +775,10 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"enableForReference": true,
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
-			},
 			"minProperties",
 			"maxProperties",
 			"dependencies",
 			"additionalProperties",
-			{
-				"propertyName": "Reserved field numbers",
-				"propertyKeyword": "reservedFieldNumbers",
-				"propertyTooltip": "Popup for multi-line text entry",
-				"shouldValidate": true,
-				"propertyType": "text",
-				"regex": "^\\d+(?:(?:,\\s*\\d+)|(?:,\\s+\\d+\\s+to\\s+\\d+)|(?:,\\s+\\d+\\s+to\\s+max))*$"
-			},
 			{
 				"propertyName": "Reserved field names",
 				"propertyKeyword": "reservedFieldNames",
@@ -922,14 +850,6 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "3"
 				}
-			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"enableForReference": true,	
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
 			},
 			"required",
 			{
@@ -1049,14 +969,6 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "UDT value type",
 				"propertyKeyword": "udt_value_type",
 				"propertyType": "text"
-			},
-			{
-				"propertyName": "Field number",
-				"propertyKeyword": "fieldNumber",
-				"enableForReference": true,
-				"shouldValidate": false,
-				"propertyType": "numeric",
-				"valueType": "number"
 			},
 			"dependencies",
 			"minProperties",
