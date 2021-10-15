@@ -14,9 +14,9 @@ const { convertParsedFileDataToCollections } = require('./services/converterServ
 
 module.exports = {
 	reFromFile: async (data, logger, callback, app) => {
+		setDependencies(app);
+		const _ = dependencies.lodash;
 		try {
-			setDependencies(app);
-			const _ = dependencies.lodash;
 			let input = await handleFileData(data.filePath);
 			const isDescriptor = !_.isError(_.attempt(JSON.parse, input))
 			if (isDescriptor) {
@@ -43,7 +43,7 @@ module.exports = {
 			callback(null, result, { dbVersion: fileDefinitions.syntaxVersion }, [], 'multipleSchema');
 		} catch (e) {
 			const errorObject = {
-				message: ``,
+				message: _.get(e, 'message', ''),
 				stack: e.stack,
 			};
 
