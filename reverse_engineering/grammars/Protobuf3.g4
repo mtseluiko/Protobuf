@@ -150,7 +150,7 @@ topLevelDef
 // enum
 
 enumDef
-  : ENUM enumName enumBody
+  : (COMMENT | lineComment+)? ENUM enumName enumBody
   ;
 
 enumBody

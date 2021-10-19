@@ -120,7 +120,7 @@ const generalFieldConverter = ({ field, internalDefinitionsNames = [], modelDefi
 }
 
 const enumFieldConverter = ({ field }) => {
-    const convertedEnum = convertEnum(field);
+    const convertedEnum = convertEnum(field);    
     return {
         ...convertedEnum,
         type: 'enum'
@@ -282,7 +282,8 @@ const convertEnum = parsedEnum => {
         listOfConstants,
         repetition: parsedEnum.repetition,
         type: ENUM_TYPE,
-        allow_alias
+        allow_alias,
+        description: parsedEnum.description
     }
 };
 
