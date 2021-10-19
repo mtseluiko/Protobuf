@@ -62,14 +62,15 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitMessageDef(ctx) {
-		const comment = getName(ctx?.COMMENT());
+		const lineComment = this.visitIfExists(ctx, 'lineComment',[]).map(comment => comment.replace(/^\/\//gm, '')).join('\n');
+		const comment = getName(ctx?.COMMENT()).replace('/*', '').replace('*/', '').replaceAll('*', '');
 		const name = getName(ctx.messageName());
 		const body = this.visit(ctx.messageBody());
 		return {
 			elementType: MESSAGE_TYPE,
 			name,
 			body,
-			description: comment.replace('/*', '').replace('*/', '').replaceAll('*', '')
+			description: `${comment}${lineComment}`
 		};
 	}
 
@@ -249,6 +250,10 @@ class Visitor extends Protobuf3Visitor {
 		return getName(ctx);
 	}
 
+	visitLineComment(ctx) {
+		return getName(ctx);
+	}
+
 	visitIfExists(ctx, funcName, defaultValue) {
 		try {
 			return this.visit(ctx[funcName]());
@@ -265,6 +270,7 @@ class Visitor extends Protobuf3Visitor {
 			return false;
 		}
 	}
+	
 }
 
 const getLabelValue = (context, label) => {
