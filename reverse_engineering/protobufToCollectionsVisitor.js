@@ -121,12 +121,15 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitEnumDef(ctx) {
+		const lineComment = this.visitIfExists(ctx, 'lineComment',[]).map(comment => comment.replace(/^\/\//gm, '')).join('\n');
+		const comment = getName(ctx?.COMMENT()).replace('/*', '').replace('*/', '').replaceAll('*', '');
 		const name = getName(ctx.enumName());
 		const body = this.visit(ctx.enumBody());
 		return {
 			elementType: ENUM_TYPE,
 			name,
-			body
+			body,
+			description: `${comment}${lineComment}`
 		};
 	}
 
