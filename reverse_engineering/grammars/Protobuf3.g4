@@ -180,7 +180,7 @@ enumValueOption
 // message
 
 messageDef
-  : COMMENT? MESSAGE messageName messageBody
+  : (COMMENT | lineComment+)? MESSAGE messageName messageBody
   ;
 
 messageBody
@@ -257,6 +257,8 @@ intLit: INT_LIT;
 strLit: STR_LIT | PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE| PROTO2_LIT_SINGLE | PROTO2_LIT_DOBULE;
 boolLit: BOOL_LIT;
 floatLit: FLOAT_LIT;
+
+lineComment: LINE_COMMENT;
 
 // keywords
 SYNTAX: 'syntax';

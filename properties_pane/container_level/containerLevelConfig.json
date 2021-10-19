@@ -122,13 +122,13 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "File name",
 				"propertyKeyword": "name",
 				"propertyType": "text",
-				"regex": "^[a-z][A-Za-z0-9_]*$"
+				"regex": "^[a-z][A-Za-z0-9._]*$"
 			},
 			{
 				"propertyName": "Technical name",
 				"propertyKeyword": "code",
 				"propertyType": "text",
-				"regex": "^[a-z][A-Za-z0-9_]*$"
+				"regex": "^[a-z][A-Za-z0-9._]*$"
 			},
 			{
 				"propertyName": "Description",

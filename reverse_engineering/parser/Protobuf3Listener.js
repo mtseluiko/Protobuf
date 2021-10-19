@@ -470,6 +470,15 @@ Protobuf3Listener.prototype.exitFloatLit = function(ctx) {
 };
 
 
+// Enter a parse tree produced by Protobuf3Parser#lineComment.
+Protobuf3Listener.prototype.enterLineComment = function(ctx) {
+};
+
+// Exit a parse tree produced by Protobuf3Parser#lineComment.
+Protobuf3Listener.prototype.exitLineComment = function(ctx) {
+};
+
+
 // Enter a parse tree produced by Protobuf3Parser#keywords.
 Protobuf3Listener.prototype.enterKeywords = function(ctx) {
 };
