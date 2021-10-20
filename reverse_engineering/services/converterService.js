@@ -28,15 +28,16 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
         }))
     const imports = _.get(parsedData, 'imports', []).map(importItem => ({ packageName: importItem.value }));
     const modelDefinitions = [...enumDefinitions, ...messagesDefinitions];
-    const formattedModelDefinitions = modelDefinitions.reduce((definitions, def) => (
-        { ...definitions, [def.name]: _.omit(def, ['name']) }), {});
+    const formattedModelDefinitions = modelDefinitions
+        .map(def => ({ ...def, isTopLevel: true }))
+        .reduce((definitions, def) => (
+            { ...definitions, [def.name]: _.omit(def, ['name']) }), {});
     const rootMessage = _.get(parsedData, 'messages', []).find(message => message.name === rootMessageName);
     return [{
         objectNames: {
             collectionName: rootMessage.name,
         },
         doc: {
-            modelDefinitions: { definitions: formattedModelDefinitions },
             dbName,
             collectionName: rootMessage.name,
             bucketInfo: {
@@ -49,18 +50,17 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
             entityLevel: {},
             views: [],
         },
-        jsonSchema: getJsonSchema(rootMessage, modelDefinitions)
+        jsonSchema: getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions)
     }]
 }
 
-const getJsonSchema = (message, modelDefinitions) => {
+const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions) => {
 
     const internalDefinitions = message.body
         .filter(field => field)
         .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
         .map(field => getConverter(field.elementType)({ field }));
     const internalDefinitionsNames = internalDefinitions.map(definition => definition.name);
-    const modelDefinitionsNames = modelDefinitions.map(definition => definition.name);
     const properties = message.body
         .filter(field => field)
         .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
@@ -88,7 +88,7 @@ const getJsonSchema = (message, modelDefinitions) => {
         properties,
         type: 'object',
         options,
-        definitions: internalDefinitions,
+        definitions: {...internalDefinitions,...modelDefinitions},
         reservedFieldNumbers: reservedFieldNumbers.join(', '),
         reservedFieldNames: reservedFieldNames.join(', '),
         description: message.description
@@ -120,7 +120,7 @@ const generalFieldConverter = ({ field, internalDefinitionsNames = [], modelDefi
 }
 
 const enumFieldConverter = ({ field }) => {
-    const convertedEnum = convertEnum(field);    
+    const convertedEnum = convertEnum(field);
     return {
         ...convertedEnum,
         type: 'enum'

@@ -22,15 +22,14 @@ const generateCollectionScript = data => {
     const packageName = `package ${containerData.code || containerData.name};\n`
 
     const jsonSchema = JSON.parse(data.jsonSchema)
-
     const internalDefinitions = parseDefinitions(getInternalDefinitions(data.internalDefinitions, jsonSchema.GUID));
-    const modelDefinitions = parseDefinitions(data.modelDefinitions);
+    const modelDefinitions = [...parseDefinitions(data.modelDefinitions), ...internalDefinitions.filter(def => def.isTopLevel)];
     const externalDefinitions = parseDefinitions(data.externalDefinitions);
     const modelDefinitionsStatements = modelDefinitions.map(definition => getDefinitionStatements({
         jsonSchema: definition,
         spacePrefix: '',
         protoVersion,
-        internalDefinitions: [],
+        internalDefinitions: internalDefinitions.filter(def => def.isTopLevel),
         modelDefinitions,
         externalDefinitions
     }))
@@ -83,12 +82,12 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
 
     const oneOfStatement = getOneOfStatement(jsonSchema?.oneOf_meta?.name, oneOfFields, spacePrefix + ROW_PREFIX);
 
-
-    const messageDefinitions = [...internalDefinitions, ...extractedDefinitions].map(definition => getDefinitionStatements({
+    const innerDefinitions = internalDefinitions.filter(def => !def.isTopLevel);
+    const messageDefinitions = [...innerDefinitions, ...extractedDefinitions].map(definition => getDefinitionStatements({
         jsonSchema: definition,
         spacePrefix: spacePrefix + ROW_PREFIX,
         protoVersion,
-        internalDefinitions: [],
+        internalDefinitions: internalDefinitions.filter(def => def.isTopLevel),
         modelDefinitions,
         externalDefinitions
     })).join('\n');
@@ -112,7 +111,7 @@ const getOneOfStatement = (oneOfName, fields, spacePrefix = '') => {
         return '';
     }
     return [`${spacePrefix}oneof ${oneOfName} {`,
-        ...fields,
+    ...fields,
         '}'
     ].join(`\n${spacePrefix}`);
 }
@@ -184,11 +183,11 @@ const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDef
         fields: Object.entries(fixedFields)
             .filter(([key, field]) => field.parent === 'oneOf')
             .reduce((fields, [key, field]) => ({ ...fields, [key]: field }), {}),
-            spacePrefix,
-            protoVersion,
-            internalDefinitions,
-            modelDefinitions,
-            externalDefinitions
+        spacePrefix,
+        protoVersion,
+        internalDefinitions,
+        modelDefinitions,
+        externalDefinitions
     });
     return { messageFields: messageFieldsStatements, oneOfFields: oneOfFieldsStatements };
 }

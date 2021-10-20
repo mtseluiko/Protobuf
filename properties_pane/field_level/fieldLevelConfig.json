@@ -775,6 +775,17 @@ making sure that you maintain a proper JSON format.
 					"value": "3"
 				}
 			},
+			{
+				"propertyName": "Top level definition",
+				"propertyKeyword": "isTopLevel",
+				"propertyType": "checkbox",
+				"dependency":{
+					"level": "parent",
+					"key": "collectionName",
+					"exist": false
+				}
+				
+			},
 			"minProperties",
 			"maxProperties",
 			"dependencies",
@@ -832,6 +843,17 @@ making sure that you maintain a proper JSON format.
 					"key": "dbVersion",
 					"value": "2"
 				}
+			},
+			{
+				"propertyName": "Top level definition",
+				"propertyKeyword": "isTopLevel",
+				"propertyType": "checkbox",
+				"dependency":{
+					"level": "parent",
+					"key": "collectionName",
+					"exist": false
+				}
+				
 			},
 			{
 				"propertyName": "Field rules",
