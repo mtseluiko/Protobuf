@@ -2,14 +2,14 @@ const { dependencies } = require('../appDependencies');
 const { getRootMessageName } = require('../helpers/rootMessageFinder');
 const { fixFileName, determineSchemaType } = require('../helpers/fileNameHelper')
 const { MAP_TYPE, ENUM_TYPE, ENUM_OPTION_TYPE,
-    ENUM_FIELD_TYPE, ONE_OF_TYPE, MESSAGE_TYPE, RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE } = require('../helpers/parsingEntitiesTypes')
+    ENUM_FIELD_TYPE, ONE_OF_TYPE, MESSAGE_TYPE, RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, FIELD_TYPE } = require('../helpers/parsingEntitiesTypes')
 
 const NEW_DATABASE = 'New File'
 
 const convertParsedFileDataToCollections = (parsedData, fileName) => {
+    const _ = dependencies.lodash;
     const dbName = fixFileName(fileName);
     const schemaType = determineSchemaType(fileName);
-    const _ = dependencies.lodash;
     const rootMessageName = getRootMessageName(parsedData.messages);
     const packageName = _.get(parsedData, 'packageName[0]', NEW_DATABASE);
     const modelDefinitionsNames = [
@@ -33,13 +33,14 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
         .reduce((definitions, def) => (
             { ...definitions, [def.name]: _.omit(def, ['name']) }), {});
     const rootMessage = _.get(parsedData, 'messages', []).find(message => message.name === rootMessageName);
+    const hackoladeGeneratedDefsNames = getHackoladeGeneratedDefNames(rootMessage);
     return [{
         objectNames: {
-            collectionName: rootMessage.name,
+            collectionName: rootMessageName,
         },
         doc: {
             dbName,
-            collectionName: rootMessage.name,
+            collectionName: rootMessageName,
             bucketInfo: {
                 code: dbName,
                 options,
@@ -50,12 +51,11 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
             entityLevel: {},
             views: [],
         },
-        jsonSchema: getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions)
+        jsonSchema: getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions, hackoladeGeneratedDefsNames)
     }]
 }
 
-const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions) => {
-
+const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions, hackoladeGeneratedDefsNames) => {
     const internalDefinitions = message.body
         .filter(field => field)
         .filter(field => [MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
@@ -64,7 +64,16 @@ const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions) => {
     const properties = message.body
         .filter(field => field)
         .filter(field => ![RESERVED_FIELD_TYPE, OPTION_FIELD_TYPE, MESSAGE_TYPE, ENUM_TYPE].includes(field.elementType))
-        .reduce((fields, field) => ({ ...fields, [field.name]: getConverter(field.elementType)({ field, internalDefinitionsNames, modelDefinitionsNames }) }), {});
+        .reduce((fields, field) => ({
+            ...fields, [field.name]: getConverter(field.elementType)({
+                field,
+                internalDefinitionsNames,
+                modelDefinitionsNames,
+                modelDefinitions,
+                internalDefinitions,
+                hackoladeGeneratedDefsNames
+            })
+        }), {});
     const options = message.body
         .filter(field => field)
         .filter(field => field.elementType === OPTION_FIELD_TYPE)
@@ -83,12 +92,15 @@ const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions) => {
                 return { ...reservedValues, reservedFieldNames: [...reservedValues.reservedFieldNames, reservedString.values.map(str => `'${str}'`).join(', ')] }
             }
         }, { reservedFieldNumbers: [], reservedFieldNames: [] });
+    const filteredInternalDefinitions = internalDefinitions
+        .filter(def => !hackoladeGeneratedDefsNames.includes(def.name))
+        .reduce((definitions, def) => ({ ...definitions, [def.name]: def }),{});
     return {
         collectionName: message.name,
         properties,
         type: 'object',
         options,
-        definitions: {...internalDefinitions,...modelDefinitions},
+        definitions: { ...filteredInternalDefinitions, ...modelDefinitions },
         reservedFieldNumbers: reservedFieldNumbers.join(', '),
         reservedFieldNames: reservedFieldNames.join(', '),
         description: message.description
@@ -109,7 +121,14 @@ const getConverter = (elementType) => {
             return generalFieldConverter;
     }
 }
-const generalFieldConverter = ({ field, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
+const generalFieldConverter = ({ field,
+    internalDefinitionsNames = [],
+    modelDefinitionsNames = [],
+    internalDefinitions = [],
+    hackoladeGeneratedDefsNames = [] }) => {
+    if (hackoladeGeneratedDefsNames.includes(field.type)) {
+        return internalDefinitions.find(def => def.name === field.type);
+    }
     return {
         ...getType({ type: field.type, internalDefinitionsNames, modelDefinitionsNames }),
         repetition: field.repetition,
@@ -127,11 +146,17 @@ const enumFieldConverter = ({ field }) => {
     }
 }
 
-const oneOfFieldConverter = ({ field, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
+const oneOfFieldConverter = ({
+    field,
+    internalDefinitionsNames = [],
+    modelDefinitionsNames = [],
+    modelDefinitions = [],
+    internalDefinitions = [],
+    hackoladeGeneratedDefsNames = [] }) => {
     const properties = field.fields.map(choice => {
         return {
             'type': 'subschema',
-            properties: [{ ...generalFieldConverter({ field: choice, internalDefinitionsNames, modelDefinitionsNames }), name: choice.name }],
+            properties: [{ ...generalFieldConverter({ field: choice, internalDefinitionsNames, modelDefinitionsNames, modelDefinitions, internalDefinitions, hackoladeGeneratedDefsNames }), name: choice.name }],
         }
     })
     return {
@@ -141,7 +166,12 @@ const oneOfFieldConverter = ({ field, internalDefinitionsNames = [], modelDefini
     }
 }
 
-const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
+const messageFieldConverter = ({
+    field: message, internalDefinitionsNames = [],
+    modelDefinitionsNames = [],
+    modelDefinitions = [],
+    internalDefinitions = [],
+    hackoladeGeneratedDefsNames = [] }) => {
     const _ = dependencies.lodash;
     const entitiesDefinitionsTypes = message.body
         .filter(field => field)
@@ -158,7 +188,10 @@ const messageFieldConverter = ({ field: message, internalDefinitionsNames = [], 
                 [field.name]: getConverter(field.elementType)({
                     field: messageWithUpperLevelDefinitions,
                     internalDefinitionsNames,
-                    modelDefinitionsNames
+                    modelDefinitionsNames,
+                    modelDefinitions,
+                    internalDefinitions,
+                    hackoladeGeneratedDefsNames
                 })
             }
         }, {});
@@ -233,6 +266,7 @@ const getType = ({ type, internalDefinitionsNames = [], modelDefinitionsNames = 
             return ({ type: 'any', typeUrl: type });
     }
 }
+
 const getMapKeyType = (type) => {
     let unwrappedType = type;
     if (type.startsWith('google.protobuf.')) {
@@ -286,6 +320,27 @@ const convertEnum = parsedEnum => {
         description: parsedEnum.description
     }
 };
+
+
+const getHackoladeGeneratedDefNames = rootMessage => {
+    const _ = dependencies.lodash;
+    const usageFrequency = _.countBy(countDefinitionUsageFrequency(rootMessage), name => name)
+    return Object.entries(usageFrequency)
+        .filter(([name, frequency]) => frequency === 1)
+        .map(([name, frequency]) => name);
+}
+
+const countDefinitionUsageFrequency = message => {
+    const _ = dependencies.lodash;
+    const defNamesInFields = message.body
+        .filter(element => element.elementType === FIELD_TYPE)
+        .filter(element => _.lowerCase(element.type).split(' ').join('_') === element.name)
+        .map(element => element.type);
+    const defNamesInDefinitions = message.body
+        .filter(element => element.elementType === MESSAGE_TYPE)
+        .reduce((definitions, def) => [...definitions, ...countDefinitionUsageFrequency(def)], [])
+    return [...defNamesInFields, ...defNamesInDefinitions];
+}
 
 module.exports = {
     convertParsedFileDataToCollections
