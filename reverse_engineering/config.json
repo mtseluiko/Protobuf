@@ -2,7 +2,7 @@
   "menu_label": "Protobuf file",
   "name": "proto",
   "extensions": [ "proto", "confluent-proto", "pulsarSchemaRegistry-proto"],
-  "useMultipleFileReverse": false,
+  "useMultipleFileReverse": true,
   "useCloudStorage": true,
   "useConfluent": true,
   "usePulsarSchemaRegistry": true,

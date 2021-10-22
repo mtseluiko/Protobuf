@@ -34,25 +34,17 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
             { ...definitions, [def.name]: _.omit(def, ['name']) }), {});
     const rootMessage = _.get(parsedData, 'messages', []).find(message => message.name === rootMessageName);
     const hackoladeGeneratedDefsNames = getHackoladeGeneratedDefNames(rootMessage);
-    return [{
-        objectNames: {
-            collectionName: rootMessageName,
-        },
-        doc: {
-            dbName,
-            collectionName: rootMessageName,
-            bucketInfo: {
-                code: dbName,
-                options,
-                package: packageName,
-                imports,
-                schemaType
-            },
-            entityLevel: {},
-            views: [],
-        },
-        jsonSchema: getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions, hackoladeGeneratedDefsNames)
-    }]
+    const jsonSchema = getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions, hackoladeGeneratedDefsNames);
+    return {
+        containerName: dbName,
+        jsonSchema: JSON.stringify(jsonSchema),
+        containerAdditionalData: {
+            options,
+            package: packageName,
+            imports,
+            schemaType
+        }
+    }
 }
 
 const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions, hackoladeGeneratedDefsNames) => {
@@ -94,7 +86,7 @@ const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions, hackola
         }, { reservedFieldNumbers: [], reservedFieldNames: [] });
     const filteredInternalDefinitions = internalDefinitions
         .filter(def => !hackoladeGeneratedDefsNames.includes(def.name))
-        .reduce((definitions, def) => ({ ...definitions, [def.name]: def }),{});
+        .reduce((definitions, def) => ({ ...definitions, [def.name]: def }), {});
     return {
         collectionName: message.name,
         properties,
@@ -126,13 +118,15 @@ const generalFieldConverter = ({ field,
     modelDefinitionsNames = [],
     internalDefinitions = [],
     hackoladeGeneratedDefsNames = [] }) => {
+    const _ = dependencies.lodash;
     if (hackoladeGeneratedDefsNames.includes(field.type)) {
         return internalDefinitions.find(def => def.name === field.type);
     }
+    const options = _.get(field, 'options', []).map(option => ({ optionKey: option.name, optionValue: option.value }))
     return {
         ...getType({ type: field.type, internalDefinitionsNames, modelDefinitionsNames }),
         repetition: field.repetition,
-        fieldOptions: field.options,
+        fieldOptions: options,
         fieldNumber: field.fieldNumber,
         description: field.description
     }
@@ -294,6 +288,7 @@ const getMapKeyType = (type) => {
 const convertEnum = parsedEnum => {
     const _ = dependencies.lodash;
     const parsedOptions = parsedEnum.body
+        .filter(Boolean)
         .filter(element => element)
         .filter(element => element.elementType === ENUM_OPTION_TYPE);
     const enumOptions = _.isEmpty(parsedOptions) ? _.get(parsedEnum, 'options', []) : parsedOptions
@@ -302,7 +297,7 @@ const convertEnum = parsedEnum => {
         optionValue: option.value
     }))
     const listOfConstants = parsedEnum.body
-        .filter(element => element)
+        .filter(Boolean)
         .filter(element => element.elementType === ENUM_FIELD_TYPE)
         .map(constant => ({
             constant: constant.name,
@@ -333,10 +328,12 @@ const getHackoladeGeneratedDefNames = rootMessage => {
 const countDefinitionUsageFrequency = message => {
     const _ = dependencies.lodash;
     const defNamesInFields = message.body
+        .filter(Boolean)
         .filter(element => element.elementType === FIELD_TYPE)
         .filter(element => _.lowerCase(element.type).split(' ').join('_') === element.name)
         .map(element => element.type);
     const defNamesInDefinitions = message.body
+        .filter(Boolean)
         .filter(element => element.elementType === MESSAGE_TYPE)
         .reduce((definitions, def) => [...definitions, ...countDefinitionUsageFrequency(def)], [])
     return [...defNamesInFields, ...defNamesInDefinitions];

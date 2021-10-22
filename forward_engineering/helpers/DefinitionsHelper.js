@@ -51,6 +51,7 @@ const extractDefinitionsFromProperties = (properties = []) => {
             }
             const property = {
                 ...value,
+                description: '',
                 $ref: `#/definitions/${key}`,
                 title: convertEntityTypeToValidName(key)
             }

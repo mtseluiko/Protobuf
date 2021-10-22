@@ -62,7 +62,7 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitMessageDef(ctx) {
-		const lineComment = this.visitIfExists(ctx, 'lineComment',[]).map(comment => comment.replace(/^\/\//gm, '')).join('\n');
+		const lineComment = this.visitIfExists(ctx, 'lineComment', []).map(comment => comment.replace(/^\/\//gm, '')).join('\n');
 		const comment = getName(ctx?.COMMENT()).replace('/*', '').replace('*/', '').replaceAll('*', '');
 		const name = getName(ctx.messageName());
 		const body = this.visit(ctx.messageBody());
@@ -103,7 +103,7 @@ class Visitor extends Protobuf3Visitor {
 			fieldNumber,
 			repetition,
 			options,
-			description: comment.replace('//', '')
+			description: comment.replace('//', '').replace('\n', ' ')
 		};
 	}
 
@@ -121,7 +121,7 @@ class Visitor extends Protobuf3Visitor {
 	}
 
 	visitEnumDef(ctx) {
-		const lineComment = this.visitIfExists(ctx, 'lineComment',[]).map(comment => comment.replace(/^\/\//gm, '')).join('\n');
+		const lineComment = this.visitIfExists(ctx, 'lineComment', []).map(comment => comment.replace(/^\/\//gm, '')).join('\n');
 		const comment = getName(ctx?.COMMENT()).replace('/*', '').replace('*/', '').replaceAll('*', '');
 		const name = getName(ctx.enumName());
 		const body = this.visit(ctx.enumBody());
@@ -146,10 +146,12 @@ class Visitor extends Protobuf3Visitor {
 				elementType: ENUM_OPTION_TYPE
 			};
 		}
-		return {
-			...field,
-			elementType: ENUM_FIELD_TYPE
-		};
+		if (field) {
+			return {
+				...field,
+				elementType: ENUM_FIELD_TYPE
+			};
+		}
 	}
 
 	visitEnumField(ctx) {
@@ -202,7 +204,7 @@ class Visitor extends Protobuf3Visitor {
 			name,
 			fieldNumber,
 			options,
-			description: comment.replace('//', '')
+			description: comment.replace('//', '').replace('\n', ' ')
 		};
 	}
 
@@ -273,7 +275,7 @@ class Visitor extends Protobuf3Visitor {
 			return false;
 		}
 	}
-	
+
 }
 
 const getLabelValue = (context, label) => {
