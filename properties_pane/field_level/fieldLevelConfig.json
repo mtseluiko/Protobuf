@@ -135,6 +135,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -205,6 +206,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -275,6 +277,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -361,6 +364,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -451,6 +455,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -528,6 +533,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -605,6 +611,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -682,6 +689,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -751,6 +759,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -838,6 +847,7 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
+				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
