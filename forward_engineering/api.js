@@ -143,9 +143,14 @@ module.exports = {
 		const getName = () => {
 			const _ = dependencies.lodash;
 			const name = this.getRecordName(data);
-			const typePostfix = _.has(data, 'containerData[0].schemaType') ? `-${data.containerData[0].schemaType}` : '';
-			const containerPrefix = _.has(data, 'containerData[0].name') ? `${data.containerData[0].name}.` : '';
-			const topicPrefix = _.has(data, 'modelData[0].schemaTopic') ? `${data.modelData[0].schemaTopic}-` : '';
+
+			const schemaType = _.get(data, 'containerData[0].schemaType');
+			const containerName = _.get(data, 'containerData[0].name');
+			const topic = _.get(data, 'modelData[0].schemaTopic')
+
+			const typePostfix =  schemaType ? `-${schemaType}` : '';
+			const containerPrefix = containerName ? `${containerName}.` : '';
+			const topicPrefix = topic ? `${topic}-` : '';
 
 			const schemaNameStrategy = _.get(data, 'modelData[0].schemaNameStrategy', '');
 			switch (schemaNameStrategy) {
