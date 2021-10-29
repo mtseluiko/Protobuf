@@ -50,8 +50,8 @@ module.exports = {
 				..._.uniq(imports),
 				' ',
 				...options,
-				..._.uniq(modelDefinitionsStatements),
-				...messages
+				...messages,
+				..._.uniq(modelDefinitionsStatements)
 			]
 				.filter(row => row !== '')
 				.join('\n');

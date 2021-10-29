@@ -16,7 +16,6 @@ const getInternalDefinitions = (definitions, messageId) => {
 }
 
 const generateCollectionScript = data => {
-    const _ = dependencies.lodash;
     const containerData = data.containerData[0];
     const protoVersion = `proto${data.modelData[0].dbVersion}`
     const packageName = `package ${containerData.code || containerData.name};\n`
@@ -66,7 +65,6 @@ const getDefinitionStatements = ({ jsonSchema, spacePrefix = '', protoVersion, i
 }
 
 const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
-    const _ = dependencies.lodash;
     const { properties, extractedDefinitions } = extractDefinitionsFromProperties(jsonSchema.properties)
     const description = formatComment(jsonSchema.description);
     const options = jsonSchema.options ? jsonSchema.options.map(option => getOptionStatement(option, spacePrefix + ROW_PREFIX)) : [];
@@ -80,7 +78,7 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         spacePrefix: spacePrefix + ROW_PREFIX
     });
 
-    const oneOfStatement = getOneOfStatement(jsonSchema?.oneOf_meta?.name, oneOfFields, spacePrefix + ROW_PREFIX);
+    const oneOfStatement = getOneOfStatement(jsonSchema?.oneOf_meta?.name || 'one_of', oneOfFields, spacePrefix + ROW_PREFIX);
 
     const innerDefinitions = internalDefinitions.filter(def => !def.isTopLevel);
     const messageDefinitions = [...innerDefinitions, ...extractedDefinitions].map(definition => getDefinitionStatements({
