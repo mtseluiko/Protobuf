@@ -1,17 +1,27 @@
 const { dependencies } = require('../../reverse_engineering/appDependencies');
 
-const fixFieldNumbers = (fields, reservedNumbers) => {
+const fixFieldNumbers = ({ fields, oneOfFields, oneOfIndex, reservedNumbers }) => {
     const _ = dependencies.lodash;
-    const fieldNumbers = Object.values(fields).map(field => field.fieldNumber);
-    const fieldsNumber = _.size(fieldNumbers)
-
+    const fieldEntries = Object.entries(fields);
+    fieldEntries.splice(oneOfIndex, 0, ...Object.entries(oneOfFields));
     const checks = getChecksFromReservedNumbers(reservedNumbers)
-    const fieldsNumberSequence = generateSequence(fieldsNumber, checks);
-    return Object.entries(fields).reduce((fixedFields, [key, value]) =>
-    ({
-        ...fixedFields,
-        [key]: { ...value, fieldNumber: fieldsNumberSequence.shift() }
-    }), {})
+    const fieldsNumberSequence = generateSequence(fieldEntries.length, checks);    
+    return fieldEntries.reduce(({collectionProperties,oneOfProperties}, [key, value])=>{
+        if(value.parent === 'oneOf'){
+            return {collectionProperties,
+                oneOfProperties: {
+                    ...oneOfProperties,
+                    [key]: {...value, fieldNumber: fieldsNumberSequence.shift()}
+                }
+             }
+        }
+        return {oneOfProperties,
+            collectionProperties: {
+                ...collectionProperties,
+                [key]: {...value, fieldNumber: fieldsNumberSequence.shift()}
+            }
+         }
+    },{collectionProperties: {}, oneOfProperties: {}})
 }
 
 const getChecksFromReservedNumbers = reservedNumbers => {

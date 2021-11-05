@@ -65,8 +65,10 @@ const getDefinitionStatements = ({ jsonSchema, spacePrefix = '', protoVersion, i
 }
 
 const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
+    const _ = dependencies.lodash;
     const { properties, extractedDefinitions } = extractDefinitionsFromProperties(jsonSchema.properties)
     const description = formatComment(jsonSchema.description);
+    const oneOfIndex = _.get(jsonSchema, 'oneOf_meta.index', 0);
     const options = jsonSchema.options ? jsonSchema.options.map(option => getOptionStatement(option, spacePrefix + ROW_PREFIX)) : [];
     const { reservedFieldNumbers, reservedFieldNames } = getReservedStatements(jsonSchema, spacePrefix + ROW_PREFIX);
     const { messageFields, oneOfFields } = getFieldsStatement({
@@ -75,7 +77,8 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         internalDefinitions: [...internalDefinitions, ...extractedDefinitions],
         modelDefinitions,
         externalDefinitions,
-        spacePrefix: spacePrefix + ROW_PREFIX
+        spacePrefix: spacePrefix + ROW_PREFIX,
+        oneOfIndex
     });
 
     const oneOfStatement = getOneOfStatement(jsonSchema?.oneOf_meta?.name || 'one_of', oneOfFields, spacePrefix + ROW_PREFIX);
@@ -95,12 +98,20 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         reservedFieldNames,
         ...options,
         messageDefinitions,
-        messageFields,
-        oneOfStatement,
+        concutFieldsStatements(messageFields, oneOfStatement, oneOfIndex),
         `${spacePrefix}}`
     ]
         .filter(row => row !== '')
         .join('\n');
+}
+
+const concutFieldsStatements = (fieldsStatements, oneOfStatement, oneOfIndex) => {
+    if(oneOfStatement === ''){
+        return fieldsStatements.join('\n');
+    }
+    const statements = [...fieldsStatements];
+    statements.splice(oneOfIndex,0,oneOfStatement);
+    return statements.join('\n');
 }
 
 const getOneOfStatement = (oneOfName, fields, spacePrefix = '') => {
@@ -157,30 +168,26 @@ const getReservedStatements = (data, spacePrefix) => {
     };
 }
 
-const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
+const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDefinitions, modelDefinitions, externalDefinitions, oneOfIndex }) => {
     const _ = dependencies.lodash;
     const oneOfFields = Object.entries((jsonSchema?.oneOf_meta?.isActivated ? jsonSchema.oneOf : [])
         .filter(property => property.isActivated)
         .reduce((properties, property) => ({ ...properties, ...property.properties }), {}))
         .filter(([key, value]) => value.isActivated)
         .reduce((oneOfProperties, [key, value]) => ({ ...oneOfProperties, [key]: { ...value, parent: 'oneOf' } }), {})
-    const fixedFields = fixFieldNumbers({ ...jsonSchema.properties, ...oneOfFields }, jsonSchema.reservedFieldNumbers);
+    const {collectionProperties, oneOfProperties} = fixFieldNumbers({fields:{...jsonSchema.properties}, oneOfFields, reservedNumbers:jsonSchema.reservedFieldNumbers, oneOfIndex});
     const messageFieldsStatements = convertFieldsToStatements(
         {
-            fields: Object.entries(fixedFields)
-                .filter(([key, field]) => !field.parent)
-                .reduce((fields, [key, field]) => ({ ...fields, [key]: field }), {}),
+            fields: collectionProperties,
             spacePrefix,
             protoVersion,
             internalDefinitions,
             modelDefinitions,
             externalDefinitions
-        }).join('\n');
+        })
 
     const oneOfFieldsStatements = convertFieldsToStatements({
-        fields: Object.entries(fixedFields)
-            .filter(([key, field]) => field.parent === 'oneOf')
-            .reduce((fields, [key, field]) => ({ ...fields, [key]: field }), {}),
+        fields: oneOfProperties,
         spacePrefix,
         protoVersion,
         internalDefinitions,
