@@ -124,7 +124,7 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Custom field number",
+				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -951,7 +951,6 @@ making sure that you maintain a proper JSON format.
 				"defaultValue": "map<string>",
 				"options": [
 					"string",
-					"bool",
 					"int32",
 					"int64",
 					"sint32",
@@ -961,7 +960,8 @@ making sure that you maintain a proper JSON format.
 					"fixed32",
 					"fixed64",
 					"sfixed32",
-					"sfixed64"
+					"sfixed64",
+					"bool"
 				]
 			},
 			{
