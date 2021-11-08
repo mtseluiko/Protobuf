@@ -124,7 +124,7 @@ making sure that you maintain a proper JSON format.
 			"description",
 			"type",
 			{
-				"propertyName": "Field rules",
+				"propertyName": "Custom field number",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"options": [
@@ -135,7 +135,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -206,7 +205,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -277,7 +275,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -364,7 +361,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -455,7 +451,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -533,7 +528,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -611,7 +605,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -689,7 +682,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -759,7 +751,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
@@ -847,7 +838,6 @@ making sure that you maintain a proper JSON format.
 				],
 				"data": "options",
 				"valueType": "string",
-				"defaultValue": "optional",
 				"dependency":{
 					"level": "model",
 					"key": "dbVersion",
