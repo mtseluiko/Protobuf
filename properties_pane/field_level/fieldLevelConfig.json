@@ -784,7 +784,7 @@ making sure that you maintain a proper JSON format.
 					"key": "collectionName",
 					"exist": false
 				}
-				
+
 			},
 			"minProperties",
 			"maxProperties",
@@ -853,7 +853,7 @@ making sure that you maintain a proper JSON format.
 					"key": "collectionName",
 					"exist": false
 				}
-				
+
 			},
 			{
 				"propertyName": "Field rules",
@@ -950,8 +950,8 @@ making sure that you maintain a proper JSON format.
 				"propertyType": "select",
 				"defaultValue": "map<string>",
 				"options": [
-					"bool",
 					"string",
+					"bool",
 					"int32",
 					"int64",
 					"sint32",
@@ -973,19 +973,19 @@ making sure that you maintain a proper JSON format.
 				"propertyType": "select",
 				"defaultValue": "map<string>",
 				"options": [
-					{ "value": "map<string>", "name": "string" },
-					{ "value": "map<int32>", "name": "int32" },
-					{ "value": "map<int64>", "name": "int64" },
-					{ "value": "map<sint32>", "name": "sint32" },
-					{ "value": "map<sint64>", "name": "sint64" },
-					{ "value": "map<uint32>", "name": "uint32" },
-					{ "value": "map<uint64>", "name": "uint64" },
-					{ "value": "map<fixed32>", "name": "fixed32" },
-					{ "value": "map<fixed64>", "name": "fixed64" },
-					{ "value": "map<sfixed32>", "name": "sfixed32" },
-					{ "value": "map<sfixed64>", "name": "sfixed64" },
-					{ "value": "map<udt>", "name": "udt" },
-					{ "value": "map<bool>", "name": "bool" }
+					"map<string>",
+					"map<int32>",
+					"map<int64>",
+					"map<sint32>",
+					"map<sint64>",
+					"map<uint32>",
+					"map<uint64>",
+					"map<fixed32>",
+					"map<fixed64>",
+					"map<sfixed32>",
+					"map<sfixed64>",
+					"map<udt>",
+					"map<bool>"
 				]
 			},
 			{
@@ -1023,4 +1023,4 @@ making sure that you maintain a proper JSON format.
 			"code"
 		]
 	}
-} 
+}
