@@ -950,6 +950,7 @@ making sure that you maintain a proper JSON format.
 				"propertyType": "select",
 				"defaultValue": "map<string>",
 				"options": [
+					"bool",
 					"string",
 					"int32",
 					"int64",
