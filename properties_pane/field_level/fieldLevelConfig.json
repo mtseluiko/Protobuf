@@ -948,7 +948,7 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Key type",
 				"propertyKeyword": "keyType",
 				"propertyType": "select",
-				"defaultValue": "map<string>",
+				"defaultValue": "string",
 				"options": [
 					"string",
 					"int32",
