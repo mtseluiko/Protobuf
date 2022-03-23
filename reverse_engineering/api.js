@@ -39,9 +39,9 @@ module.exports = {
 				logger.log('error', errorObject, 'ProtoBuf file Reverse-Engineering Error');
 				callback(errorObject);
 			}
-			const extension = _.last(data.filePath.split('.'));
 			const result = convertParsedFileDataToCollections(fileDefinitions, path.basename(data.filePath));
-			callback(null, {...result, extension}, { dbVersion: fileDefinitions.syntaxVersion });
+			callback(null, result, { dbVersion: fileDefinitions.syntaxVersion }, [], 'multipleSchema');
+
 		} catch (e) {
 			const errorObject = {
 				message: _.get(e, 'message', ''),

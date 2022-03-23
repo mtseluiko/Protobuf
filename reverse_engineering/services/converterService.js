@@ -35,16 +35,28 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
     const rootMessage = _.get(parsedData, 'messages', []).find(message => message.name === rootMessageName);
     const hackoladeGeneratedDefsNames = getHackoladeGeneratedDefNames(rootMessage);
     const jsonSchema = getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions, hackoladeGeneratedDefsNames);
-    return {
-        containerName: dbName,
+
+    const messages = [{
+        objectNames: {
+            collectionName: jsonSchema.collectionName,
+        },
+        doc: {
+            modelDefinitions: JSON.stringify({ definitions: formattedModelDefinitions }),
+            dbName,
+            collectionName: jsonSchema.collectionName,
+            bucketInfo: {
+                options,
+                package: packageName,
+                imports,
+                schemaType,
+            },
+            entityLevel: {},
+            views: [],
+        },
         jsonSchema: JSON.stringify(jsonSchema),
-        containerAdditionalData: {
-            options,
-            package: packageName,
-            imports,
-            schemaType
-        }
-    }
+    }];
+
+    return messages;
 }
 
 const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions, hackoladeGeneratedDefsNames) => {
@@ -92,7 +104,7 @@ const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions, hackola
         properties,
         type: 'object',
         options,
-        definitions: { ...filteredInternalDefinitions, ...modelDefinitions },
+        definitions: { ...filteredInternalDefinitions },
         reservedFieldNumbers: reservedFieldNumbers.join(', '),
         reservedFieldNames: reservedFieldNames.join(', '),
         description: message.description
