@@ -126,7 +126,7 @@ const getOneOfStatement = (oneOfName, fields, spacePrefix = '') => {
 }
 
 const getEnumStatement = ({ jsonSchema, spacePrefix = '' }) => {
-    const constants = jsonSchema.listOfConstants.map(item => `${ROW_PREFIX}${item.constant} = ${item.value};`)
+    const constants = jsonSchema.listOfConstants?.map(item => `${ROW_PREFIX}${item.constant} = ${item.value};`) || [];
     const options = getEnumOptions(jsonSchema.options);
     return [
         `${spacePrefix}enum ${jsonSchema.title} {`,
