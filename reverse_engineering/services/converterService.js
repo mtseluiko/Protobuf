@@ -162,6 +162,7 @@ const oneOfFieldConverter = ({
     const properties = field.fields.map(choice => {
         return {
             'type': 'subschema',
+            'subschema': true,
             properties: [{ ...generalFieldConverter({ field: choice, internalDefinitionsNames, modelDefinitionsNames, modelDefinitions, internalDefinitions, hackoladeGeneratedDefsNames }), name: choice.name }],
         }
     })
