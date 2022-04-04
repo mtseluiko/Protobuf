@@ -56,7 +56,30 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
         jsonSchema: JSON.stringify(jsonSchema),
     }];
 
-    return messages;
+    return [
+        ...messages,
+        ...messagesDefinitions.map(message => ({
+            objectNames: {
+                collectionName: message.name,
+            },
+            doc: {
+                dbName,
+                collectionName: message.name,
+                bucketInfo: {
+                    options,
+                    package: packageName,
+                    imports,
+                    schemaType,
+                },
+                entityLevel: {},
+                views: [],
+            },
+            jsonSchema: JSON.stringify({
+                type: "reference",
+                $ref: `#model/definitions/${message.name}`,
+            })
+        }))
+    ];
 }
 
 const getJsonSchema = (message, modelDefinitionsNames, modelDefinitions, hackoladeGeneratedDefsNames) => {

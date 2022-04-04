@@ -66,6 +66,10 @@ const getDefinitionStatements = ({ jsonSchema, spacePrefix = '', protoVersion, i
 
 const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, internalDefinitions, modelDefinitions, externalDefinitions }) => {
     const _ = dependencies.lodash;
+    if (jsonSchema.$ref) {
+        const definitionName = jsonSchema.$ref.slice('#model/definitions/'.length);
+        jsonSchema = modelDefinitions.find(definition => definition.title === definitionName) || jsonSchema;
+    }
     const { properties, extractedDefinitions } = extractDefinitionsFromProperties(jsonSchema.properties)
     const description = formatComment(jsonSchema.description);
     const oneOfIndex = _.get(jsonSchema, 'oneOf_meta.index', 0);
@@ -224,7 +228,7 @@ const getFieldInfo = ({ field, isReference, isExternalRef, internalDefinitions, 
         return getDefinitionInfo(externalDefinitions, field.fieldOptions, field.GUID)
     }
     if (!isReference) {
-        let fieldType = field.subtype || field.type;
+        let fieldType = field.subtype || field.type || field.typeUrl;
         if (field.type === 'map') {
             const value = field.subtype !== `map<udt>` ? field.subtype.slice(4, -1) : getUDT(field.udt_value_type)
             fieldType = `map<${field.keyType},${value}>`
