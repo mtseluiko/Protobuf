@@ -28,6 +28,11 @@ module.exports = {
 				callback(null, '');
 			}
 			const { syntax, imports, modelDefinitionsStatements, options, messages } = preparedData.collections.reduce((processedMessages, message) => {
+				const schema = JSON.parse(message);
+				if (schema.$ref) {
+					return processedMessages;
+				}
+
 				const processedMessage = generateCollectionScript({ ...preparedData, jsonSchema: message });
 				return {
 					syntax: processedMessage.syntax,
