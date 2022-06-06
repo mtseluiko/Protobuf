@@ -261,11 +261,16 @@ const mapFieldConverter = ({ field }) => {
 
 const getType = ({ type, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     let unwrappedType = type;
-    if (internalDefinitionsNames.includes(type) || modelDefinitionsNames.includes(type)) {
+    if (internalDefinitionsNames.includes(type)) {
         return {
             $ref: `#/definitions/${type}`,
             type: 'reference'
-        }
+        };
+    } else if (modelDefinitionsNames.includes(type)) {
+        return {
+            $ref: `#model/definitions/${type}`,
+            type: 'reference'
+        };
     }
     if (type.startsWith('google.protobuf.')) {
         unwrappedType = type.replace('google.protobuf.', '').replace('Value', '').toLowerCase();
