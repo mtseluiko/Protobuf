@@ -10,7 +10,7 @@ const ExprErrorListener = require('./antlrErrorListener');
 const { setDependencies, dependencies } = require('./appDependencies');
 const { parseDescriptor } = require('./services/descriptorToProtoStringService')
 const { convertParsedFileDataToCollections } = require('./services/converterService');
-
+const adaptJsonSchema = require('./helpers/adaptJsonSchema/adaptJsonSchema');
 
 module.exports = {
 	reFromFile: async (data, logger, callback, app) => {
@@ -49,6 +49,28 @@ module.exports = {
 			};
 
 			logger.log('error', errorObject, 'ProtoBuf file Reverse-Engineering Error');
+			callback(errorObject);
+		}
+	},
+
+	adaptJsonSchema(data, logger, callback) {
+		logger.log('info', 'Adaptation of JSON Schema started...', 'Adapt JSON Schema');
+		try {
+			const jsonSchema = JSON.parse(data.jsonSchema);
+
+			const adaptedJsonSchema = adaptJsonSchema(jsonSchema);
+
+			logger.log('info', 'Adaptation of JSON Schema finished.', 'Adapt JSON Schema');
+
+			callback(null, {
+				jsonSchema: JSON.stringify(adaptedJsonSchema)
+			});
+		} catch(e) {
+			const errorObject = {
+				message: `${error.message}\nFile name: ${fileName}`,
+				stack: error.stack,
+			};
+			logger.log('error', errorObject, 'Adaptation of JSON Schema Error');
 			callback(errorObject);
 		}
 	},

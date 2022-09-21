@@ -4,7 +4,9 @@
   "description": "",
   "author": "Hackolade",
   "dependencies": {
-    "antlr4": "^4.8.0"
+    "antlr4": "^4.8.0",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.partial": "^4.2.1"
   },
   "type": "file",
   "installed": true
