@@ -53,7 +53,8 @@ module.exports = {
 		}
 	},
 
-	adaptJsonSchema(data, logger, callback) {
+	adaptJsonSchema(data, logger, callback, app) {
+		setDependencies(app);
 		logger.log('info', 'Adaptation of JSON Schema started...', 'Adapt JSON Schema');
 		try {
 			const jsonSchema = JSON.parse(data.jsonSchema);
