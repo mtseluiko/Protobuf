@@ -156,6 +156,10 @@ const getImports = (externalDefinitions, imports = []) => {
 
 const getOptionStatement = (option, spacePrefix) => {
     const optionValue = option.optionValue;
+    const optionKey = option.optionKey;
+    if (!optionValue || !optionKey) {
+        return '';
+    }
     if (optionValue === 'true' || optionValue === 'false') {
         return `${spacePrefix}option ${option.optionKey} = ${optionValue};`
     }
@@ -274,7 +278,7 @@ const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {
 const getFieldOptionsStatement = (options) => {
     const _ = dependencies.lodash;
 
-    if (_.isEmpty(options)) {
+    if (!options?.optionKey || !options?.optionValue) {
         return '';
     }
 
