@@ -278,13 +278,14 @@ const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {
 const getFieldOptionsStatement = (options) => {
     const _ = dependencies.lodash;
 
-    if (!options?.optionKey || !options?.optionValue) {
-        return '';
-    }
-
-    const stringifiedOptions = options.filter(option => option.optionKey !== 'allow_alias')
+    const stringifiedOptions = (options || [])
+        .filter(option => option?.optionKey && option?.optionValue)
+        .filter(option => option.optionKey !== 'allow_alias')
         .map(option => `${option.optionKey} = ${option.optionValue}`)
 
+    if (!stringifiedOptions.length) {
+        return '';
+    }
     return ` [${stringifiedOptions.join(', ')}]`;
 }
 
