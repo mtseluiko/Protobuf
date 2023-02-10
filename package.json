@@ -1,7 +1,7 @@
 {
     "name": "Protobuf",
-    "version": "0.1.7",
-    "versionDate": "2022-12-16",
+    "version": "0.1.8",
+    "versionDate": "2023-02-10",
     "author": "hackolade",
     "engines": {
         "hackolade": "5.2.7",
