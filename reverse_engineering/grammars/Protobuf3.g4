@@ -69,7 +69,7 @@ extensions
 // Oneof and oneof field
 
 oneof
-  : ONEOF oneofName LC ( optionStatement | oneofField | emptyStatement )* RC
+  : ((comment | lineComment+)+)? ONEOF oneofName ((comment | lineComment+)+)? LC ( optionStatement | oneofField | emptyStatement )* RC
   ;
 
 oneofField
@@ -150,7 +150,7 @@ topLevelDef
 // enum
 
 enumDef
-  : (COMMENT | lineComment+)? ENUM enumName enumBody
+  : ((comment | lineComment+)+)? ENUM enumName ((comment | lineComment+)+)? enumBody
   ;
 
 enumBody
@@ -180,7 +180,7 @@ enumValueOption
 // message
 
 messageDef
-  : (COMMENT | lineComment+)? MESSAGE messageName messageBody
+  : ((comment | lineComment+)+)? MESSAGE messageName ((comment | lineComment+)+)? messageBody
   ;
 
 messageBody
@@ -204,7 +204,7 @@ messageElement
 // service
 
 serviceDef
-  : SERVICE serviceName LC serviceElement* RC
+  : ((comment | lineComment+)+)? SERVICE serviceName ((comment | lineComment+)+)? LC serviceElement* RC
   ;
 
 serviceElement
@@ -258,6 +258,7 @@ strLit: STR_LIT | PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE| PROTO2_LIT_SINGLE | PRO
 boolLit: BOOL_LIT;
 floatLit: FLOAT_LIT;
 
+comment: COMMENT;
 lineComment: LINE_COMMENT;
 
 // keywords

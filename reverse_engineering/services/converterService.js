@@ -193,6 +193,7 @@ const oneOfFieldConverter = ({
         'name': field.name,
         'type': 'choice',
         'choice': 'oneOf',
+        description: field.description,
         properties
     }
 }
