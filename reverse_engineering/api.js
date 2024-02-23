@@ -31,13 +31,13 @@ module.exports = {
 			parser.removeErrorListeners();
 			parser.addErrorListener(new ExprErrorListener());
 			const fileDefinitions = parser.proto().accept(new protoToCollectionsVisitor());
-			if(_.isEmpty(fileDefinitions.messages)){
+			if(_.isEmpty(fileDefinitions.messages) && _.isEmpty(fileDefinitions.enums)){
 				const errorObject = {
-					message: `No message was found in the file`,
+					message: `No definitions were found in the file`,
 					stack: {},
 				};
 				logger.log('error', errorObject, 'ProtoBuf file Reverse-Engineering Error');
-				callback(errorObject);
+				return callback(errorObject);
 			}
 			const result = convertParsedFileDataToCollections(fileDefinitions, path.basename(data.filePath));
 			callback(null, result, { dbVersion: fileDefinitions.syntaxVersion }, [], 'multipleSchema');

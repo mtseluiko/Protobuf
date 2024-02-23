@@ -33,6 +33,34 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
         .reduce((definitions, def) => (
             { ...definitions, [def.name]: _.omit(def, ['name']) }), {});
     const rootMessage = _.get(parsedData, 'messages', []).find(message => message.name === rootMessageName);
+
+    if (!rootMessage) {
+      return [
+        {
+          doc: {
+            dbName,
+            emptyBucket: true,
+            bucketInfo: {
+              options,
+              package: packageName,
+              imports,
+              schemaType,
+            },
+            entityLevel: {},
+            views: [],
+          },
+        },
+        {
+          doc: {
+            modelDefinitions: JSON.stringify({ definitions: formattedModelDefinitions }),
+            bucketInfo: {},
+            entityLevel: {},
+            views: [],
+          },
+        },
+      ];
+    }
+
     const hackoladeGeneratedDefsNames = getHackoladeGeneratedDefNames(rootMessage);
     const jsonSchema = getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions, hackoladeGeneratedDefsNames);
 
