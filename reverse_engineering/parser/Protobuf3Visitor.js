@@ -10,7 +10,7 @@ function Protobuf3Visitor() {
 }
 
 Protobuf3Visitor.prototype = Object.create(
-  antlr4.tree.ParseTreeVisitor.prototype,
+  antlr4.tree.ParseTreeVisitor.prototype
 );
 Protobuf3Visitor.prototype.constructor = Protobuf3Visitor;
 
@@ -276,6 +276,11 @@ Protobuf3Visitor.prototype.visitComment = function (ctx) {
 
 // Visit a parse tree produced by Protobuf3Parser#lineComment.
 Protobuf3Visitor.prototype.visitLineComment = function (ctx) {
+  return this.visitChildren(ctx);
+};
+
+// Visit a parse tree produced by Protobuf3Parser#fieldLineComment.
+Protobuf3Visitor.prototype.visitFieldLineComment = function (ctx) {
   return this.visitChildren(ctx);
 };
 

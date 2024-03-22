@@ -28,7 +28,8 @@
                 "allOf": true,
                 "not": true
             },
-            "enableJsonType": false
+            "enableJsonType": false,
+            "FEScriptCommentsSupported": true
         }
     },
     "description": "Hackolade plugin for Protocol Buffers",

@@ -61,6 +61,7 @@ IDENTIFIER=60
 WS=61
 COMMENT=62
 LINE_COMMENT=63
+EOL=64
 'syntax'=1
 'import'=2
 'weak'=3
