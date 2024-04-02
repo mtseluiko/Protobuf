@@ -22,7 +22,8 @@ module.exports = {
 			const _ = dependencies.lodash;
 			let preparedData = {
 				...data,
-				containerData
+				containerData,
+				includeAllModelDefinitionsStatements: true,
 			}
 			if (_.isEmpty(preparedData.collections)) {
 				callback(null, '');
@@ -79,7 +80,8 @@ module.exports = {
 			const _ = dependencies.lodash;
 			let preparedData = {
 				...data,
-				containerData
+				containerData,
+				includeAllModelDefinitionsStatements: false,
 			}
 			const description = formatComment(containerData[0].description);
 			const processedMessage = generateCollectionScript(preparedData);

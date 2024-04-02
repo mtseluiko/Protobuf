@@ -1,5 +1,7 @@
 const { dependencies } = require('../../reverse_engineering/appDependencies');
 
+const MODEL_DEFINITION_REF_REGEX = /#model\/definitions\/(.*)/;
+
 const parseDefinitions = definitions => {
     const _ = dependencies.lodash;
     return Object.entries(
@@ -72,8 +74,82 @@ const convertEntityTypeToValidName = (type) => {
     return _.lowerCase(type).split(' ').join('_');
 }
 
+/**
+ * @param {{ schema?: object }}
+ * @returns {boolean}
+ */
+const checkIsModelDefinitionReference = ({ schema }) => {
+    return MODEL_DEFINITION_REF_REGEX.test(schema?.$ref);
+};
+
+/**
+ * @param {{ schema?: object, modelDefinitions: object[] }}
+ * @returns {object | undefined}
+ */
+const getModelDefinitionByReference = ({ schema, modelDefinitions }) => {
+    const isModelDefinitionReference = checkIsModelDefinitionReference({ schema });
+
+    if (!isModelDefinitionReference) {
+        return schema;
+    }
+
+    const [__, definitionName] = MODEL_DEFINITION_REF_REGEX.exec(schema.$ref);
+
+    return modelDefinitions.find((definition) => definition.title === definitionName);
+};
+
+/**
+ * @param {{ schema?: object, modelDefinitions: object[] }}
+ * @returns {string[]}
+ */
+const getUsedModelDefinitionNames = ({ schema, modelDefinitions }) => {
+    const isModelDefinitionReference = checkIsModelDefinitionReference({ schema });
+
+    if (isModelDefinitionReference) {
+        const definition = getModelDefinitionByReference({ schema, modelDefinitions });
+        const usedModelDefinitionNames = getUsedModelDefinitionNames({ schema: definition, modelDefinitions });
+
+        return [definition?.title, ...usedModelDefinitionNames];
+    }
+
+    if (schema?.properties) {
+        return Object.values(schema.properties).flatMap((propertySchema) => {
+            return getUsedModelDefinitionNames({ schema: propertySchema, modelDefinitions });
+        });
+    }
+
+    return [];
+};
+
+/**
+ * @param {{ jsonSchema: object, modelDefinitions: object[], internalDefinitions: object[] }}
+ * @returns {string[]}
+ */
+const getMessageUsedModelDefinitionNames = ({
+    jsonSchema,
+    modelDefinitions,
+    internalDefinitions,
+}) => {
+    const schema = getModelDefinitionByReference({ schema: jsonSchema, modelDefinitions });
+    const usedModelDefinitionNamesInFields = getUsedModelDefinitionNames({ schema, modelDefinitions });
+    const usedModelDefinitionNamesInChoice = (jsonSchema?.oneOf || []).flatMap(propertySchema => {
+        return getUsedModelDefinitionNames({ schema: propertySchema, modelDefinitions });
+    });
+    const usedModelDefinitionNamesInInternalDefinitions =
+        internalDefinitions.flatMap((definition) => {
+            return getUsedModelDefinitionNames({ schema: definition, modelDefinitions });
+        });
+
+    return [
+        ...usedModelDefinitionNamesInFields,
+        ...usedModelDefinitionNamesInChoice,
+        ...usedModelDefinitionNamesInInternalDefinitions,
+    ];
+};
+
 module.exports = {
     parseDefinitions,
     getDefinitionInfo,
-    extractDefinitionsFromProperties
+    extractDefinitionsFromProperties,
+    getMessageUsedModelDefinitionNames,
 }

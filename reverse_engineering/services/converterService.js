@@ -182,7 +182,7 @@ const generalFieldConverter = ({ field,
     internalDefinitions = [],
     hackoladeGeneratedDefsNames = [] }) => {
     const _ = dependencies.lodash;
-    if (hackoladeGeneratedDefsNames.includes(field.type)) {
+    if (hackoladeGeneratedDefsNames.includes(field.type) && internalDefinitionsNames.includes(field.type)) {
         return internalDefinitions.find(def => def.name === field.type);
     }
     const options = _.get(field, 'options', []).map(option => ({ optionKey: option.name, optionValue: option.value }))

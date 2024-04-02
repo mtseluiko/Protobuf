@@ -1,5 +1,10 @@
 const { dependencies } = require('../../reverse_engineering/appDependencies');
-const { parseDefinitions, getDefinitionInfo, extractDefinitionsFromProperties } = require('../helpers/DefinitionsHelper');
+const {
+  parseDefinitions,
+  getDefinitionInfo,
+  extractDefinitionsFromProperties,
+  getMessageUsedModelDefinitionNames,
+} = require('../helpers/DefinitionsHelper');
 const { fixFieldNumbers } = require('../helpers/FieldNumberGenerationHelper');
 const { formatComment, wrapInCommentBlock } = require('../helpers/utils');
 
@@ -24,14 +29,22 @@ const generateCollectionScript = data => {
     const internalDefinitions = parseDefinitions(getInternalDefinitions(data.internalDefinitions, jsonSchema.GUID));
     const modelDefinitions = [...parseDefinitions(data.modelDefinitions), ...internalDefinitions.filter(def => def.isTopLevel)];
     const externalDefinitions = parseDefinitions(data.externalDefinitions);
-    const modelDefinitionsStatements = modelDefinitions.map(definition => getDefinitionStatements({
-        jsonSchema: definition,
-        spacePrefix: '',
-        protoVersion,
-        internalDefinitions: internalDefinitions.filter(def => def.isTopLevel),
-        modelDefinitions,
-        externalDefinitions
-    }))
+    const usedModelDefinitionNames = data.includeAllModelDefinitionsStatements
+            ? modelDefinitions.map(definition => definition.title)
+            : getMessageUsedModelDefinitionNames({ jsonSchema, modelDefinitions, internalDefinitions });
+    const modelDefinitionsStatements = modelDefinitions
+        .filter((definition) => usedModelDefinitionNames.includes(definition.title))
+        .map((definition) =>
+            getDefinitionStatements({
+                jsonSchema: definition,
+                protoVersion,
+                internalDefinitions: internalDefinitions.filter(
+                    (def) => def.isTopLevel
+                ),
+                modelDefinitions,
+                externalDefinitions,
+            })
+        );
 
     const imports = getImports(externalDefinitions, containerData.imports);
 
