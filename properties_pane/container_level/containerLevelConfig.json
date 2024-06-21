@@ -188,11 +188,7 @@ making sure that you maintain a proper JSON format.
 				"propertyKeyword": "schemaType",
 				"propertyTooltip": "Select from list of options",
 				"propertyType": "select",
-				"options": [
-					"",
-					"key",
-					"value"
-				]
+				"options": ["", "key", "value"]
 			},
 			{
 				"propertyName": "Pulsar topic name",

@@ -9,38 +9,38 @@
 			"name": "Proto Schema",
 			"keyword": "protoSchema",
 			"disableApplyScriptToInstance": true
-		  },
-		{
-		  "name": "Confluent API Schema",
-		  "keyword": "confluentSchemaRegistry",
-		  "isApplicationHandler": true
 		},
 		{
-		  "name": "Pulsar Schema Registry",
-		  "keyword": "pulsarSchemaRegistry",
-		  "isApplicationHandler": true
+			"name": "Confluent API Schema",
+			"keyword": "confluentSchemaRegistry",
+			"isApplicationHandler": true
+		},
+		{
+			"name": "Pulsar Schema Registry",
+			"keyword": "pulsarSchemaRegistry",
+			"isApplicationHandler": true
 		}
-	  ],
+	],
 	"level": {
 		"entity": true,
 		"container": {
-		  "file": true,
-		  "options": [
-			{
-			  "name": "Confluent API Schema",
-			  "keyword": "confluentSchemaRegistry",
-			  "mode": "json",
-			  "isApplicationHandler": true
-			},
-			{
-			  "name": "Pulsar Schema Registry",
-			  "keyword": "pulsarSchemaRegistry",
-			  "mode": "json",
-			  "isApplicationHandler": true
-			}
-		  ]
+			"file": true,
+			"options": [
+				{
+					"name": "Confluent API Schema",
+					"keyword": "confluentSchemaRegistry",
+					"mode": "json",
+					"isApplicationHandler": true
+				},
+				{
+					"name": "Pulsar Schema Registry",
+					"keyword": "pulsarSchemaRegistry",
+					"mode": "json",
+					"isApplicationHandler": true
+				}
+			]
 		}
-	  },
+	},
 	"schemaRegistry": {
 		"defaultRegexp": "^POST \\/(.*)$\n\n([\\s\\S]*)",
 		"regexp": "^POST \\/(.*)$\n\n([\\s\\S]*)",

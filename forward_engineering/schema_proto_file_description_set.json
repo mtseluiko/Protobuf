@@ -1,5 +1,5 @@
 {
-    "type": "PROTOBUF_NATIVE",
-    "schema": "{\"fileDescriptorSet\":\"CnIKEnB1bHNhcl9wcm90by5wcm90bxIMcHVsc2FyLnByb3RvIiAKDFNhbXBsZVJlY29yZBIQCghteUZpZWxkMRgBIAEoCUIkCiJvcmcuYXBhY2hlLnB1bHNhci5jb21tb24uYXBpLnByb3RvYgZwcm90bzM=\",\"rootMessageTypeName\":\"proto.SampleRecord\",\"rootFileDescriptorName\":\"test.proto\"}",
-    "properties": {}
+	"type": "PROTOBUF_NATIVE",
+	"schema": "{\"fileDescriptorSet\":\"CnIKEnB1bHNhcl9wcm90by5wcm90bxIMcHVsc2FyLnByb3RvIiAKDFNhbXBsZVJlY29yZBIQCghteUZpZWxkMRgBIAEoCUIkCiJvcmcuYXBhY2hlLnB1bHNhci5jb21tb24uYXBpLnByb3RvYgZwcm90bzM=\",\"rootMessageTypeName\":\"proto.SampleRecord\",\"rootFileDescriptorName\":\"test.proto\"}",
+	"properties": {}
 }

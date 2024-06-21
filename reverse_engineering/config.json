@@ -1,14 +1,14 @@
 {
-  "menu_label": "Protobuf file",
-  "name": "proto",
-  "extensions": [ "proto", "confluent-proto", "pulsarSchemaRegistry-proto"],
-  "useMultipleFileReverse": true,
-  "useCloudStorage": true,
-  "useConfluent": true,
-  "usePulsarSchemaRegistry": true,
-  "schemaRegistry": {
-    "extension": "proto",
-    "confluentSchemaType": "PROTOBUF",
-    "pulsarSchemaType": "PROTOBUF_NATIVE"
-  }
+	"menu_label": "Protobuf file",
+	"name": "proto",
+	"extensions": ["proto", "confluent-proto", "pulsarSchemaRegistry-proto"],
+	"useMultipleFileReverse": true,
+	"useCloudStorage": true,
+	"useConfluent": true,
+	"usePulsarSchemaRegistry": true,
+	"schemaRegistry": {
+		"extension": "proto",
+		"confluentSchemaType": "PROTOBUF",
+		"pulsarSchemaType": "PROTOBUF_NATIVE"
+	}
 }

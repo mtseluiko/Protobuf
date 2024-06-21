@@ -127,15 +127,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -145,14 +140,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -197,15 +188,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -215,14 +201,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -267,15 +249,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -285,14 +262,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -338,14 +311,7 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Subtype",
 				"propertyKeyword": "subtype",
 				"propertyType": "select",
-				"options": [
-					"int32",
-					"int64",
-					"sint32",
-					"sint64",
-					"uint32",
-					"uint64"
-				],
+				"options": ["int32", "int64", "sint32", "sint64", "uint32", "uint64"],
 				"data": "options",
 				"valueType": "string"
 			},
@@ -353,15 +319,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -371,14 +332,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -430,12 +387,7 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Subtype",
 				"propertyKeyword": "subtype",
 				"propertyType": "select",
-				"options": [
-					"fixed32",
-					"fixed64",
-					"sfixed32",
-					"sfixed64"
-				],
+				"options": ["fixed32", "fixed64", "sfixed32", "sfixed64"],
 				"data": "options",
 				"valueType": "string"
 			},
@@ -443,15 +395,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -461,14 +408,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -520,15 +463,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -538,14 +476,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -597,15 +531,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -615,14 +544,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -674,15 +599,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -692,14 +612,10 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -743,15 +659,10 @@ making sure that you maintain a proper JSON format.
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"enableForReference": true,
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -762,14 +673,10 @@ making sure that you maintain a proper JSON format.
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"enableForReference": true,
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -779,12 +686,11 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Top level definition",
 				"propertyKeyword": "isTopLevel",
 				"propertyType": "checkbox",
-				"dependency":{
+				"dependency": {
 					"level": "parent",
 					"key": "collectionName",
 					"exist": false
 				}
-
 			},
 			"minProperties",
 			"maxProperties",
@@ -830,15 +736,10 @@ making sure that you maintain a proper JSON format.
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"enableForReference": true,
-				"options": [
-					"",
-					"required",
-					"optional",
-					"repeated"
-				],
+				"options": ["", "required", "optional", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "2"
@@ -848,26 +749,21 @@ making sure that you maintain a proper JSON format.
 				"propertyName": "Top level definition",
 				"propertyKeyword": "isTopLevel",
 				"propertyType": "checkbox",
-				"dependency":{
+				"dependency": {
 					"level": "parent",
 					"key": "collectionName",
 					"exist": false
 				}
-
 			},
 			{
 				"propertyName": "Field rules",
 				"propertyKeyword": "repetition",
 				"propertyType": "select",
 				"enableForReference": true,
-				"options": [
-					"",
-					"singular",
-					"repeated"
-				],
+				"options": ["", "singular", "repeated"],
 				"data": "options",
 				"valueType": "string",
-				"dependency":{
+				"dependency": {
 					"level": "model",
 					"key": "dbVersion",
 					"value": "3"
@@ -1018,9 +914,6 @@ making sure that you maintain a proper JSON format.
 			},
 			"comments"
 		],
-		"choice": [
-			"name",
-			"code"
-		]
+		"choice": ["name", "code"]
 	}
 }
