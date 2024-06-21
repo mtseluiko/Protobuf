@@ -33,6 +33,34 @@ const convertParsedFileDataToCollections = (parsedData, fileName) => {
         .reduce((definitions, def) => (
             { ...definitions, [def.name]: _.omit(def, ['name']) }), {});
     const rootMessage = _.get(parsedData, 'messages', []).find(message => message.name === rootMessageName);
+
+    if (!rootMessage) {
+      return [
+        {
+          doc: {
+            dbName,
+            emptyBucket: true,
+            bucketInfo: {
+              options,
+              package: packageName,
+              imports,
+              schemaType,
+            },
+            entityLevel: {},
+            views: [],
+          },
+        },
+        {
+          doc: {
+            modelDefinitions: JSON.stringify({ definitions: formattedModelDefinitions }),
+            bucketInfo: {},
+            entityLevel: {},
+            views: [],
+          },
+        },
+      ];
+    }
+
     const hackoladeGeneratedDefsNames = getHackoladeGeneratedDefNames(rootMessage);
     const jsonSchema = getJsonSchema(rootMessage, modelDefinitionsNames, formattedModelDefinitions, hackoladeGeneratedDefsNames);
 
@@ -154,7 +182,7 @@ const generalFieldConverter = ({ field,
     internalDefinitions = [],
     hackoladeGeneratedDefsNames = [] }) => {
     const _ = dependencies.lodash;
-    if (hackoladeGeneratedDefsNames.includes(field.type)) {
+    if (hackoladeGeneratedDefsNames.includes(field.type) && internalDefinitionsNames.includes(field.type)) {
         return internalDefinitions.find(def => def.name === field.type);
     }
     const options = _.get(field, 'options', []).map(option => ({ optionKey: option.name, optionValue: option.value }))
@@ -193,6 +221,7 @@ const oneOfFieldConverter = ({
         'name': field.name,
         'type': 'choice',
         'choice': 'oneOf',
+        description: field.description,
         properties
     }
 }
@@ -261,11 +290,16 @@ const mapFieldConverter = ({ field }) => {
 
 const getType = ({ type, internalDefinitionsNames = [], modelDefinitionsNames = [] }) => {
     let unwrappedType = type;
-    if (internalDefinitionsNames.includes(type) || modelDefinitionsNames.includes(type)) {
+    if (internalDefinitionsNames.includes(type)) {
         return {
             $ref: `#/definitions/${type}`,
             type: 'reference'
-        }
+        };
+    } else if (modelDefinitionsNames.includes(type)) {
+        return {
+            $ref: `#model/definitions/${type}`,
+            type: 'reference'
+        };
     }
     if (type.startsWith('google.protobuf.')) {
         unwrappedType = type.replace('google.protobuf.', '').replace('Value', '').toLowerCase();

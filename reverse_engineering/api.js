@@ -10,7 +10,7 @@ const ExprErrorListener = require('./antlrErrorListener');
 const { setDependencies, dependencies } = require('./appDependencies');
 const { parseDescriptor } = require('./services/descriptorToProtoStringService')
 const { convertParsedFileDataToCollections } = require('./services/converterService');
-
+const { adaptJsonSchema } = require('./helpers/adaptJsonSchema/adaptJsonSchema');
 
 module.exports = {
 	reFromFile: async (data, logger, callback, app) => {
@@ -31,13 +31,13 @@ module.exports = {
 			parser.removeErrorListeners();
 			parser.addErrorListener(new ExprErrorListener());
 			const fileDefinitions = parser.proto().accept(new protoToCollectionsVisitor());
-			if(_.isEmpty(fileDefinitions.messages)){
+			if(_.isEmpty(fileDefinitions.messages) && _.isEmpty(fileDefinitions.enums)){
 				const errorObject = {
-					message: `No message was found in the file`,
+					message: `No definitions were found in the file`,
 					stack: {},
 				};
 				logger.log('error', errorObject, 'ProtoBuf file Reverse-Engineering Error');
-				callback(errorObject);
+				return callback(errorObject);
 			}
 			const result = convertParsedFileDataToCollections(fileDefinitions, path.basename(data.filePath));
 			callback(null, result, { dbVersion: fileDefinitions.syntaxVersion }, [], 'multipleSchema');
@@ -52,6 +52,8 @@ module.exports = {
 			callback(errorObject);
 		}
 	},
+
+	adaptJsonSchema,
 };
 
 const handleFileData = filePath => {

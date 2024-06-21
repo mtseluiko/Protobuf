@@ -1,5 +1,12 @@
 grammar Protobuf3;
 
+@parser::members {
+  this.isPreviousTokenOnHiddenChannel =  function() {
+      const previousToken = input.tokens[input.index - 1];
+      return previousToken?.channel == antlr4.Lexer.HIDDEN;
+  }
+}
+
 proto
   : (LINE_COMMENT | COMMENT)* syntax
     (
@@ -45,7 +52,7 @@ optionName
 // Normal Field
 
 field
-  : repetition=( REPEATED | OPTIONAL | REQUIRED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI LINE_COMMENT?
+  : repetition=( REPEATED | OPTIONAL | REQUIRED )? type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI fieldLineComment?
   ;
 
 fieldOptions
@@ -69,11 +76,11 @@ extensions
 // Oneof and oneof field
 
 oneof
-  : ONEOF oneofName LC ( optionStatement | oneofField | emptyStatement )* RC
+  : ((comment | lineComment+)+)? ONEOF oneofName ((comment | lineComment+)+)? LC ( optionStatement | oneofField | emptyStatement | LINE_COMMENT | COMMENT )* RC
   ;
 
 oneofField
-  : type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI  LINE_COMMENT?
+  : type_ fieldName EQ fieldNumber ( LB fieldOptions RB )? SEMI fieldLineComment?
   ;
 
 // Map field
@@ -150,7 +157,7 @@ topLevelDef
 // enum
 
 enumDef
-  : (COMMENT | lineComment+)? ENUM enumName enumBody
+  : ((comment | lineComment+)+)? ENUM enumName ((comment | lineComment+)+)? enumBody
   ;
 
 enumBody
@@ -180,7 +187,7 @@ enumValueOption
 // message
 
 messageDef
-  : (COMMENT | lineComment+)? MESSAGE messageName messageBody
+  : ((comment | lineComment+)+)? MESSAGE messageName ((comment | lineComment+)+)? messageBody
   ;
 
 messageBody
@@ -204,7 +211,7 @@ messageElement
 // service
 
 serviceDef
-  : SERVICE serviceName LC serviceElement* RC
+  : ((comment | lineComment+)+)? SERVICE serviceName ((comment | lineComment+)+)? LC serviceElement* RC
   ;
 
 serviceElement
@@ -258,7 +265,9 @@ strLit: STR_LIT | PROTO3_LIT_SINGLE | PROTO3_LIT_DOBULE| PROTO2_LIT_SINGLE | PRO
 boolLit: BOOL_LIT;
 floatLit: FLOAT_LIT;
 
+comment: COMMENT;
 lineComment: LINE_COMMENT;
+fieldLineComment: { !this.isPreviousTokenOnHiddenChannel() }? LINE_COMMENT;
 
 // keywords
 SYNTAX: 'syntax';
@@ -346,9 +355,10 @@ fragment OCTAL_DIGIT: [0-7];
 fragment HEX_DIGIT: [0-9A-Fa-f];
 
 // comments
-WS  :   [ \t\r\n\u000C]+ -> skip;
+WS:  [ \t\u000C]+ -> skip;
 COMMENT: '/*' .*? '*/';
 LINE_COMMENT: '//' ~[\r\n]*;
+EOL: [\r\n]+ -> channel(HIDDEN);
 
 keywords
   : SYNTAX

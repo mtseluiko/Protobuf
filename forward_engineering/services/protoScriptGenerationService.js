@@ -1,7 +1,12 @@
 const { dependencies } = require('../../reverse_engineering/appDependencies');
-const { parseDefinitions, getDefinitionInfo, extractDefinitionsFromProperties } = require('../helpers/DefinitionsHelper');
+const {
+  parseDefinitions,
+  getDefinitionInfo,
+  extractDefinitionsFromProperties,
+  getMessageUsedModelDefinitionNames,
+} = require('../helpers/DefinitionsHelper');
 const { fixFieldNumbers } = require('../helpers/FieldNumberGenerationHelper');
-const { formatComment } = require('../helpers/utils');
+const { formatComment, wrapInCommentBlock } = require('../helpers/utils');
 
 const PROTO_2_FIELD_RULES = ['required', 'optional', 'repeated'];
 const PROTO_3_FIELD_RULES = ['singular', 'repeated'];
@@ -24,14 +29,22 @@ const generateCollectionScript = data => {
     const internalDefinitions = parseDefinitions(getInternalDefinitions(data.internalDefinitions, jsonSchema.GUID));
     const modelDefinitions = [...parseDefinitions(data.modelDefinitions), ...internalDefinitions.filter(def => def.isTopLevel)];
     const externalDefinitions = parseDefinitions(data.externalDefinitions);
-    const modelDefinitionsStatements = modelDefinitions.map(definition => getDefinitionStatements({
-        jsonSchema: definition,
-        spacePrefix: '',
-        protoVersion,
-        internalDefinitions: internalDefinitions.filter(def => def.isTopLevel),
-        modelDefinitions,
-        externalDefinitions
-    }))
+    const usedModelDefinitionNames = data.includeAllModelDefinitionsStatements
+            ? modelDefinitions.map(definition => definition.title)
+            : getMessageUsedModelDefinitionNames({ jsonSchema, modelDefinitions, internalDefinitions });
+    const modelDefinitionsStatements = modelDefinitions
+        .filter((definition) => usedModelDefinitionNames.includes(definition.title))
+        .map((definition) =>
+            getDefinitionStatements({
+                jsonSchema: definition,
+                protoVersion,
+                internalDefinitions: internalDefinitions.filter(
+                    (def) => def.isTopLevel
+                ),
+                modelDefinitions,
+                externalDefinitions,
+            })
+        );
 
     const imports = getImports(externalDefinitions, containerData.imports);
 
@@ -85,7 +98,7 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         oneOfIndex
     });
 
-    const oneOfStatement = getOneOfStatement(jsonSchema?.oneOf_meta?.name || 'one_of', oneOfFields, spacePrefix + ROW_PREFIX);
+    const oneOfStatement = getOneOfStatement(jsonSchema?.oneOf_meta, oneOfFields, spacePrefix + ROW_PREFIX);
 
     const innerDefinitions = internalDefinitions.filter(def => !def.isTopLevel);
     const messageDefinitions = [...innerDefinitions, ...extractedDefinitions].map(definition => getDefinitionStatements({
@@ -96,7 +109,8 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
         modelDefinitions,
         externalDefinitions
     })).join('\n');
-    return [description,
+    const statement = [
+        description,
         `${spacePrefix}message ${jsonSchema.title} {`,
         reservedFieldNumbers,
         reservedFieldNames,
@@ -107,6 +121,8 @@ const getMessageStatement = ({ jsonSchema, spacePrefix = '', protoVersion, inter
     ]
         .filter(row => row !== '')
         .join('\n');
+
+    return jsonSchema.isActivated ? statement : wrapInCommentBlock({ statement, spacePrefix });
 }
 
 const concutFieldsStatements = (fieldsStatements, oneOfStatement, oneOfIndex) => {
@@ -118,19 +134,23 @@ const concutFieldsStatements = (fieldsStatements, oneOfStatement, oneOfIndex) =>
     return statements.join('\n');
 }
 
-const getOneOfStatement = (oneOfName, fields, spacePrefix = '') => {
+const getOneOfStatement = (oneOfMeta, fields, spacePrefix = '') => {
+    const oneOfName = oneOfMeta?.name || 'one_of';
     const _ = dependencies.lodash;
     if (_.isEmpty(fields)) {
         return '';
     }
-    return [`${spacePrefix}oneof ${oneOfName} {`,
+
+    const statement = [`${spacePrefix}oneof ${oneOfName} {`,
     ...fields,
         '}'
     ].join(`\n${spacePrefix}`);
+
+    return oneOfMeta?.isActivated ? statement : wrapInCommentBlock({ statement, spacePrefix });
 }
 
 const getEnumStatement = ({ jsonSchema, spacePrefix = '' }) => {
-    const constants = jsonSchema.listOfConstants.map(item => `${ROW_PREFIX}${item.constant} = ${item.value};`)
+    const constants = jsonSchema.listOfConstants?.map(item => `${ROW_PREFIX}${item.constant} = ${item.value};`) || [];
     const options = getEnumOptions(jsonSchema.options);
     return [
         `${spacePrefix}enum ${jsonSchema.title} {`,
@@ -156,6 +176,10 @@ const getImports = (externalDefinitions, imports = []) => {
 
 const getOptionStatement = (option, spacePrefix) => {
     const optionValue = option.optionValue;
+    const optionKey = option.optionKey;
+    if (!optionValue || !optionKey) {
+        return '';
+    }
     if (optionValue === 'true' || optionValue === 'false') {
         return `${spacePrefix}option ${option.optionKey} = ${optionValue};`
     }
@@ -174,10 +198,8 @@ const getReservedStatements = (data, spacePrefix) => {
 
 const getFieldsStatement = ({ jsonSchema, spacePrefix, protoVersion, internalDefinitions, modelDefinitions, externalDefinitions, oneOfIndex }) => {
     const _ = dependencies.lodash;
-    const oneOfFields = Object.entries((jsonSchema?.oneOf_meta?.isActivated ? jsonSchema.oneOf : [])
-        .filter(property => property.isActivated)
+    const oneOfFields = Object.entries((jsonSchema.oneOf || [])
         .reduce((properties, property) => ({ ...properties, ...property.properties }), {}))
-        .filter(([key, value]) => value.isActivated)
         .reduce((oneOfProperties, [key, value]) => ({ ...oneOfProperties, [key]: { ...value, parent: 'oneOf' } }), {})
     const {collectionProperties, oneOfProperties} = fixFieldNumbers({fields:{...jsonSchema.properties}, oneOfFields, reservedNumbers:jsonSchema.reservedFieldNumbers, oneOfIndex});
     const messageFieldsStatements = convertFieldsToStatements(
@@ -207,14 +229,19 @@ const convertFieldsToStatements = ({ fields, spacePrefix, protoVersion, internal
         const isReference = !!field.$ref;
         const isExternalRef = isReference ? field.$ref.startsWith('file://') : false;
         const { fieldType, fieldOptions, hasReferenceError } = getFieldInfo({ field, isReference, isExternalRef, internalDefinitions, modelDefinitions, externalDefinitions });
+        const fieldStatement = getFieldStatement({ field, fieldType, fieldName, fieldOptions, protoVersion });
+
         if (hasFieldNumberError) {
-            return `${spacePrefix}/*${getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })}${fieldType} ${fieldName} = ${field.fieldNumber};\tERROR: you must specify a field number to include this field in the script*/`
+            return `${spacePrefix}/*${fieldStatement}\tERROR: you must specify a field number to include this field in the script*/`;
         }
         if (hasReferenceError) {
-            return `${spacePrefix}/*${getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })}${fieldType} ${fieldName} = ${field.fieldNumber};\tERROR: the field contains an incorrect reference to not existed definition*/`
+            return `${spacePrefix}/*${fieldStatement}\tERROR: the field contains an incorrect reference to not existed definition*/`;
+        }
+        if (!field.isActivated) {
+            return `${spacePrefix}// ${fieldStatement} ${field.description || ''}`;
         }
 
-        return `${spacePrefix}${getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })}${fieldType} ${fieldName} = ${field.fieldNumber}${getFieldOptionsStatement(fieldOptions)}; ${field.description && field.description !== '' ? ` //${field.description}` : ''}`
+        return `${spacePrefix}${fieldStatement} ${field.description ? ` //${field.description}` : ''}`;
     });
 }
 
@@ -274,15 +301,23 @@ const getValidatedFieldRule = ({ fieldRule, protoVersion }) => {
 const getFieldOptionsStatement = (options) => {
     const _ = dependencies.lodash;
 
-    if (_.isEmpty(options)) {
-        return '';
-    }
-
-    const stringifiedOptions = options.filter(option => option.optionKey !== 'allow_alias')
+    const stringifiedOptions = (options || [])
+        .filter(option => option?.optionKey && option?.optionValue)
+        .filter(option => option.optionKey !== 'allow_alias')
         .map(option => `${option.optionKey} = ${option.optionValue}`)
 
+    if (!stringifiedOptions.length) {
+        return '';
+    }
     return ` [${stringifiedOptions.join(', ')}]`;
 }
+
+const getFieldStatement = ({ field, fieldType, fieldName, fieldOptions, protoVersion }) => {
+    const fieldRuleStatement = getValidatedFieldRule({ fieldRule: field.repetition, protoVersion })
+    const fieldOptionsStatement = getFieldOptionsStatement(fieldOptions);
+
+    return `${fieldRuleStatement}${fieldType} ${fieldName} = ${field.fieldNumber}${fieldOptionsStatement};`;
+};
 
 module.exports = {
     generateCollectionScript

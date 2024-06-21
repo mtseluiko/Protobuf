@@ -1,0 +1,15 @@
+{
+	"name": "definitions",
+	"erdAbbreviation": "<doc>",
+	"dtdAbbreviation": "{...}",
+	"parentType": "document",
+	"defaultValues": {},
+	"subtypes": {
+		"udts": {
+			"childValueType": [
+				"enum",
+				"message"
+			]
+		}
+	}
+}
